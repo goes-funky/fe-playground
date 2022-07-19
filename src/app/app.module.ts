@@ -10,7 +10,6 @@ import { NavigationModule } from './navigation/navigation.module';
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, NavigationModule, DashboardModule],
-  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
