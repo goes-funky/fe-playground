@@ -1,4 +1,4 @@
-# Y42 frontend interview app
+# Y42 frontend playground
 
 ## Prerequisites
 
@@ -38,6 +38,14 @@ To run E2E tests with Playwright
 
 ```sh
 npm run e2e
+```
+
+### Running unit tests
+
+To run unit tests with Jest
+
+```sh
+npm run test
 ```
 
 ## Interview tasks
