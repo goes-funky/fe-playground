@@ -1,27 +1,41 @@
-# Y42FrontendInterview
+# Y42 frontend interview app
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.6.
+## Prerequisites
 
-## Development server
+- Node 16
+- Angular CLI
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+```sh
+npm install
+```
 
-## Code scaffolding
+## Running the app
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Getting started
 
-## Build
+To serve the app
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```sh
+npm start
+```
 
-## Running unit tests
+and open the browser @ http://localhost:4200
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### About the app
 
-## Running end-to-end tests
+A simple authentication mechanism is implemented in `auth.service.ts`.
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- Use a valid email.
+- Any password of length > 2 is allowed
 
-## Further help
+The app is a simple product catalog, which allows viewing products and editing them.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+You can double-click a row to open a small bottom sheet with a form to edit all fields, or optionally you can also double-click the `stock` and `price` cells to update them right from the grid.
+
+## Running E2E tests
+
+To run E2E tests with Playwright
+
+```sh
+npm run e2e
+```
