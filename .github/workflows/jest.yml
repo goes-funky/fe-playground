@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main, master]
 
+# on subsequent push cancel previously in progress jobs
+concurrency:
+  group: ${{ github.head_ref }}-test
+  cancel-in-progress: true
+
 jobs:
   test:
     timeout-minutes: 60
