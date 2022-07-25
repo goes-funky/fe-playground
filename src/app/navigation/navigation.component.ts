@@ -1,7 +1,8 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'y42-navigation',
@@ -25,14 +26,25 @@ import { map, shareReplay } from 'rxjs/operators';
         top: 0;
         z-index: 1;
       }
+
+      .container {
+        height: calc(100% - 4.5rem);
+        padding: 0 1rem;
+        overflow: auto;
+      }
     `,
   ],
 })
 export class NavigationComponent {
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map((result) => result.matches),
-    shareReplay(),
-  );
+  constructor(private breakpointObserver: BreakpointObserver, private auth: AuthService) {}
 
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  readonly isHandset$: Observable<boolean> = this.breakpointObserver
+    .observe(Breakpoints.Handset)
+    .pipe(map((result) => result.matches));
+
+  readonly loggedIn$ = this.auth.loggedIn$;
+
+  readonly sideNavOpened$ = combineLatest([this.isHandset$, this.loggedIn$]).pipe(
+    map(([handset, loggedIn]) => !handset && loggedIn),
+  );
 }

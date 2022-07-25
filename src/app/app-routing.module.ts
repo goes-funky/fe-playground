@@ -1,19 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LoggedInGuard } from './auth/logged-in.guard';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'products',
     pathMatch: 'full',
   },
   {
-    path: 'dashboard',
-    loadChildren: () => import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
-  },
-  {
-    path: 'address',
-    loadChildren: () => import('./address-form/address-form.module').then((m) => m.AddressFormModule),
+    path: 'products',
+    canActivate: [LoggedInGuard],
+    loadChildren: () => import('./products/products.module').then((m) => m.ProductsModule),
   },
 ];
 

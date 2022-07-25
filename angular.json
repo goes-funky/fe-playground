@@ -91,7 +91,8 @@
               "browserTarget": "y42-frontend-interview:build:production"
             },
             "development": {
-              "browserTarget": "y42-frontend-interview:build:development"
+              "browserTarget": "y42-frontend-interview:build:development",
+              "proxyConfig": "proxy.config.js"
             }
           },
           "defaultConfiguration": "development"

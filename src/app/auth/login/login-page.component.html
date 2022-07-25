@@ -1,0 +1,36 @@
+<form [formGroup]="form" novalidate (ngSubmit)="onSubmit()">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>Login</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="email" type="email" autocomplete="off" [formControl]="form.controls.email" />
+            <mat-error *ngIf="form.controls['email'].errors?.['required']">
+              Email is <strong>required</strong>
+            </mat-error>
+            <mat-error *ngIf="form.controls['email'].errors?.['email']"> Email is <strong>invalid</strong> </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Password" type="password" [formControl]="form.controls.password" />
+            <mat-error *ngIf="form.controls['password'].errors?.['required']">
+              Password is <strong>required</strong>
+            </mat-error>
+            <mat-error *ngIf="form.controls['password'].errors?.['minlength']">
+              Password is <strong>too short</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Submit</button>
+    </mat-card-actions>
+  </mat-card>
+</form>
