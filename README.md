@@ -32,10 +32,20 @@ The app is a simple product catalog, which allows viewing products and editing t
 
 You can double-click a row to open a small bottom sheet with a form to edit all fields, or optionally you can also double-click the `stock` and `price` cells to update them right from the grid.
 
-## Running E2E tests
+### Running E2E tests
 
 To run E2E tests with Playwright
 
 ```sh
 npm run e2e
 ```
+
+## Interview tasks
+
+### Angular developer
+
+Please read the [Angular developer](README_ANGULAR.md) task description.
+
+### Automated test developer
+
+Please read the [Automated test developer](README_E2E.md) task description.
