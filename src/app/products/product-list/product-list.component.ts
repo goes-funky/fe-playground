@@ -116,6 +116,11 @@ export class ProductListComponent implements OnInit {
       return;
     }
 
+    const target = params.event?.target as HTMLElement;
+    if (target.classList.contains('ag-cell-inline-editing')) {
+      return;
+    }
+
     const product: Product = params.data;
     const id = product.id;
     this.bottomSheet

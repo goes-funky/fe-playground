@@ -45,7 +45,7 @@ export class LoginPageComponent {
   }
 
   readonly form = new FormGroup({
-    email: new FormControl('a@a.a', [Validators.required, Validators.minLength(2), Validators.email]),
+    email: new FormControl('', [Validators.required, Validators.minLength(2), Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(2)]),
   });
 
