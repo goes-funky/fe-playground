@@ -31,5 +31,6 @@ Write automated tests (using Playwright) to test that the application
 
 - The above mentioned use-cases are covered by tests
 - Running `npm run e2e` succeeds
+- The CI pipeline is green
 
 Once you are ready please either open a pull-request or send a link to your Github branch where the solution is implemented back to the recruiter.
