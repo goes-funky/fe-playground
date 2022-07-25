@@ -4,29 +4,32 @@ Hello and thanks for your interest in the "Angular developer" position here @ Y4
 
 If you haven't yet please first read the [main readme](README.md) to setup the working environment and get the app up and running.
 
-As your task for the role you will improve our demo application with new features, unit tests and refactorings.
+## Technical details
 
-As described in the [main readme](README.md) it is a simple product catalog with editing capabilities that is "secured" by a login form.
+rxjs `BehaviorSubject`s are being used for state management.
 
-The app works and it is enough to run `npm start` to run the app.
+In the background, data is being fetched from [dummyjson API](https://dummyjson.com/docs/products).
+
+Since that API does not support mutating calls like PUT or DELETE we are simulating these calls with a small delay before modifying the local copy.
 
 ## Expectations
 
-- Please write **all** tests in the `/e2e` directory.
-  Additionally, you are also encouraged to make changes to any file in the `src` directory if necessary.
+- Please implement at least two of the below tasks.
+- Please do not forget (happy path) unit tests.
 - Please keep in mind that code quality and cleanliness, ie. adherence to best practices will be evaluated.
-- Please write as many or as few tests as you like.
-- Please do not take more than 90 minutes for the task
+- Feel free to refactor/improve/abstract existing code if necessary.
+- Please do not take more than 90 minutes for the task.
 
-## Task
+## Tasks
 
-Improve the existing code base.
-
-The task description is intentionally vague.
+- Implement a "Add product" functionality based on the existing `product-detail` component.
+- Implement search functionality to dynamically filter the product list (please use [this API](https://dummyjson.com/docs/products#search)).
+- Implement a "Fetched XXX seconds ago" label, which updates every minute.
 
 ## Definition of Done
 
 - CI pipeline is green
-- new code is covered by unit tests
+- At least two tasks are implemented
+- New code is covered by unit tests (happy path)
 
 Once you are ready please either open a pull-request or send a link to your Github branch where the solution is implemented back to the recruiter.
