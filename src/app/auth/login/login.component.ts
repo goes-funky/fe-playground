@@ -5,8 +5,8 @@ import { tap } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Component({
-  selector: 'y42-login-page',
-  templateUrl: './login-page.component.html',
+  selector: 'y42-login',
+  templateUrl: './login.component.html',
   styles: [
     `
       .full-width {
@@ -39,7 +39,7 @@ import { AuthService } from '../auth.service';
     `,
   ],
 })
-export class LoginPageComponent {
+export class LoginComponent {
   constructor(private auth: AuthService, private router: Router) {
     this.auth.logout().subscribe();
   }

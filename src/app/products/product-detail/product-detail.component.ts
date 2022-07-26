@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { Product } from '../product-http.service';
 
@@ -46,10 +46,13 @@ export class ProductDetailComponent implements OnInit {
 
   readonly form = new FormGroup({
     id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
-    title: new FormControl('', { nonNullable: true }),
-    description: new FormControl('', { nonNullable: true }),
-    stock: new FormControl(0, { nonNullable: true }),
-    price: new FormControl(0, { nonNullable: true }),
+    title: new FormControl('', { validators: [Validators.required, Validators.minLength(2)], nonNullable: true }),
+    description: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(2), Validators.maxLength(255)],
+      nonNullable: true,
+    }),
+    stock: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
+    price: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
   });
 
   ngOnInit(): void {

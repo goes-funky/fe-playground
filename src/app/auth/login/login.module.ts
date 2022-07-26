@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
-import { LoginPageComponent } from './login-page.component';
+import { LoginComponent } from './login.component';
 
 @NgModule({
   imports: [
@@ -19,10 +19,10 @@ import { LoginPageComponent } from './login-page.component';
     RouterModule.forChild([
       {
         path: '',
-        component: LoginPageComponent,
+        component: LoginComponent,
       },
     ]),
   ],
-  declarations: [LoginPageComponent],
+  declarations: [LoginComponent],
 })
-export class LoginPageModule {}
+export class LoginModule {}

@@ -8,11 +8,11 @@ import { RouterModule } from '@angular/router';
     RouterModule.forChild([
       {
         path: 'login',
-        loadChildren: () => import('./login/login-page.module').then((m) => m.LoginPageModule),
+        loadChildren: () => import('./login/login.module').then((m) => m.LoginModule),
       },
       {
         path: 'logout',
-        loadChildren: () => import('./logout/logout-page.module').then((m) => m.LogoutPageModule),
+        loadChildren: () => import('./logout/logout.module').then((m) => m.LogoutModule),
       },
     ]),
   ],

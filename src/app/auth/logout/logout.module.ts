@@ -29,4 +29,4 @@ export class LogoutGuard implements CanActivate {
   ],
   declarations: [],
 })
-export class LogoutPageModule {}
+export class LogoutModule {}
