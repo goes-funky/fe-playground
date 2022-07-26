@@ -22,8 +22,8 @@ Since that API does not support mutating calls like PUT or DELETE we are simulat
 
 ## Tasks
 
-- Implement a "Add product" functionality based on the existing `product-detail` component.
-- Implement search functionality to dynamically filter the product list (please use [this API](https://dummyjson.com/docs/products#search)).
+- Implement an "Add product" functionality. Please use the existing `product-detail` component.
+- Implement search functionality to dynamically filter the `product-list`. [Please use this API](https://dummyjson.com/docs/products#search).
 - Implement a "Fetched XXX seconds ago" label, which updates every minute.
 
 ## Definition of Done
@@ -32,4 +32,4 @@ Since that API does not support mutating calls like PUT or DELETE we are simulat
 - At least two tasks are implemented
 - New code is covered by unit tests (happy path)
 
-Once you are ready please either open a pull-request or send a link to your Github branch where the solution is implemented back to the recruiter.
+Once you are ready please open a pull-request.
