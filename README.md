@@ -23,14 +23,14 @@ and open the browser @ http://localhost:4200
 
 ### About the app
 
+The app is a simple product catalog, which allows viewing products and editing them.
+
+You can double-click a row to open a small bottom sheet with a form to edit all fields, or optionally you can also double-click the `stock` and `price` cells to update them right from the grid.
+
 A simple authentication mechanism is implemented in `auth.service.ts`.
 
 - Use a valid email.
 - Any password of length > 2 is allowed
-
-The app is a simple product catalog, which allows viewing products and editing them.
-
-You can double-click a row to open a small bottom sheet with a form to edit all fields, or optionally you can also double-click the `stock` and `price` cells to update them right from the grid.
 
 ### Running E2E tests
 
@@ -50,10 +50,10 @@ npm run test
 
 ## Interview tasks
 
-### Angular developer
+### Senior Angular Developer
 
-Please read the [Angular developer](README_ANGULAR.md) task description.
+If you are applying for the `Senior Angular Developer` position please continue reading the [Senior Angular Developer task description](README_ANGULAR.md).
 
-### Automated test developer
+### Automated Test Developer
 
-Please read the [Automated test developer](README_E2E.md) task description.
+If you are applying for the `Automated Test Developer` position please continue reading the [Automated Test Developer task description](README_E2E.md).
