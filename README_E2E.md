@@ -25,7 +25,7 @@ Write automated tests (using Playwright) to test that the application
 - supports double-clicking a row and opening the `Product form` to edit every property of a `Product`
 - supports double-clicking the `Stock` cell to edit the value directly from the grid
 - supports double-clicking the `Price` cell to edit the value directly from the grid
-- correctly validates the `Product form` when entering non-sensical values
+- correctly validates the inputs in the `Product form`
 - supports sorting the list by `Stock`
 
 ## Definition of Done
