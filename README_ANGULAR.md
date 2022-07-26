@@ -14,6 +14,7 @@ Since that API does not support mutating calls like PUT or DELETE we are simulat
 
 ## Expectations
 
+- Please checkout a new branch at `angular/{your-name} and commit your changes there.
 - Please implement at least two of the below tasks.
 - Please do not forget (happy path) unit tests.
 - Please keep in mind that code quality and cleanliness, ie. adherence to best practices will be evaluated.

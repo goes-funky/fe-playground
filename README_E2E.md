@@ -12,6 +12,7 @@ The app works and it is enough to run `npm run e2e` to run the tests.
 
 ## Expectations
 
+- Please checkout a new branch at `e2e/{your-name} and commit your changes there.
 - Please write **all** tests in the `/e2e` directory.
   Additionally, you are also encouraged to make changes to any file in the `/src` directory if necessary.
 - Please keep in mind that code quality and cleanliness, ie. adherence to best practices will be evaluated.
