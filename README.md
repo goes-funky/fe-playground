@@ -2,6 +2,8 @@
 
 ## Prerequisites
 
+**Important**: Please **fork the repository before cloning**. Cloning this repository directly will result in an error when pushing your changes if you're not authorized with our organization.
+
 - Node 16
 - Angular CLI
 

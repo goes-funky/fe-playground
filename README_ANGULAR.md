@@ -4,6 +4,8 @@ Hello and thanks for your interest in the "Angular developer" position here @ Y4
 
 If you haven't yet please first read the [main readme](README.md) to setup the working environment and get the app up and running.
 
+**Important**: Please **fork the repository before cloning**.
+
 ## Technical details
 
 rxjs `BehaviorSubject`s are being used for state management.
@@ -14,7 +16,6 @@ Since that API does not support mutating calls like PUT or DELETE we are simulat
 
 ## Expectations
 
-- Please checkout a new branch at `angular/{your-name} and commit your changes there.
 - Please implement at least two of the below tasks.
 - Please do not forget (happy path) unit tests.
 - Please keep in mind that code quality and cleanliness, ie. adherence to best practices will be evaluated.
@@ -34,3 +35,4 @@ Since that API does not support mutating calls like PUT or DELETE we are simulat
 - New code is covered by unit tests (happy path)
 
 Once you are ready please open a pull-request.
+Remember that this only works from **forked** repositories.

@@ -4,6 +4,8 @@ Hello and thanks for your interest in the "automated test developer" position he
 
 If you haven't yet please first read the [main readme](README.md) to setup the working environment and get the app up and running.
 
+**Important**: Please **fork the repository before cloning**.
+
 As your task for the role you will implement automated tests against our demo application.
 
 As described in the [main readme](README.md) it is a simple product catalog with editing capabilities that is "secured" by a login form.
@@ -35,4 +37,5 @@ Write automated tests (using Playwright) to test that the application
 - Running `npm run e2e` succeeds
 - The CI pipeline is green
 
-Once you are ready please either open a pull-request or send a link to your Github branch where the solution is implemented back to the recruiter.
+Once you are ready please open a pull-request.
+Remember that this only works from **forked** repositories.
