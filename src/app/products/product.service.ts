@@ -12,11 +12,23 @@ export class ProductService {
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
 
+  #fetchedDateTime!: Date;
+  get lastFetchedDateTime(): Date {
+    return this.#fetchedDateTime;
+  }
+
   getAll() {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
       tap((response) => this.products$$.next(response.products)),
-      finalize(() => this.loading$$.next(false)),
+      finalize(() => this.#finalise()),
+    );
+  }
+  search(searchText: string) {
+    this.loading$$.next(true);
+    return this.productHttp.search(searchText).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.#finalise()),
     );
   }
 
@@ -86,5 +98,10 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  #finalise() {
+    this.loading$$.next(false);
+    this.#fetchedDateTime = new Date();
   }
 }

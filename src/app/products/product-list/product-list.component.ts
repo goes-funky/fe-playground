@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, Subject, Subscription, switchMap, timer } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
@@ -9,7 +9,11 @@ import { ProductService } from '../product.service';
 @Component({
   selector: 'y42-product-list',
   template: `
-  <button mat-button (click)="onAddProduct()">Add Product</button>
+  <div>
+    <button id="addProductButton" mat-raised-button color="primary" (click)="onAddProduct()">Add Product</button>
+    <input id="searchProductInput" placeholder="Search" (keyup)="searchProducts($event)" />
+    <label>Last fetched: {{lastFetchedTimeInSeconds}} seconds ago</label>
+  </div>
   <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
@@ -41,11 +45,20 @@ import { ProductService } from '../product.service';
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) { }
+export class ProductListComponent implements OnInit, OnDestroy {
+  openProduct = (params: RowDoubleClickedEvent<Product>) => this.#openProduct(params);
+  onAddProduct = () => this.#onAddProduct();
+  searchProducts = ($event: KeyboardEvent) => this.#searchProducts($event);
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  lastFetchedTimeInSeconds: number = 0;
+
+  #searchTextChange = new Subject<string>();
+  #keyUpSubscription!: Subscription;
+  #timerSubscription!: Subscription;
+
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) { }
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -111,9 +124,11 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit(): void {
     this.productService.getAll().subscribe();
+    this.#subscribeForSearchTextChange();
+    this.#initialiseLastFetchedTimer();
   }
 
-  openProduct(params: RowDoubleClickedEvent<Product>): void {
+  #openProduct(params: RowDoubleClickedEvent<Product>): void {
     if (!params.data) {
       return;
     }
@@ -134,7 +149,8 @@ export class ProductListComponent implements OnInit {
       )
       .subscribe();
   }
-  onAddProduct(): void {
+
+  #onAddProduct(): void {
     this.bottomSheet
       .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: null })
       .afterDismissed()
@@ -143,5 +159,38 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.addProduct(newProduct)),
       )
       .subscribe();
+  }
+
+  #searchProducts(event: KeyboardEvent): void {
+    if (!(<HTMLInputElement>event.target).value) {
+      this.#searchTextChange.next("");
+      return;
+    }
+    this.#searchTextChange.next((<HTMLInputElement>event.target).value);
+  }
+
+  #subscribeForSearchTextChange(): void {
+    this.#keyUpSubscription = this.#searchTextChange.pipe(
+      debounceTime(500),
+      distinctUntilChanged()).subscribe((searchText: string) => {
+        this.productService.search(searchText).subscribe();
+      });
+  }
+
+  #initialiseLastFetchedTimer(): void {
+    this.#timerSubscription = timer(0, 60000).subscribe(() => {
+      this.#updateLastFetchedTime(this.productService.lastFetchedDateTime);
+    });
+  }
+  #updateLastFetchedTime(lastFetchedDateTime:Date): void {
+    if(!lastFetchedDateTime) {
+      return;
+    }
+    this.lastFetchedTimeInSeconds = Math.floor((Date.now() - lastFetchedDateTime.getTime()) / 1000);
+  }
+
+  ngOnDestroy(): void {
+    this.#timerSubscription?.unsubscribe();
+    this.#keyUpSubscription?.unsubscribe();
   }
 }
