@@ -1,47 +1,58 @@
 import { expect, Locator, Page } from '@playwright/test';
 
 export class ProductPage {
-
+    
     readonly page: Page;
     readonly productPanel: string;
     readonly logoutPanel: string;
     readonly productTitle: string;
-    readonly productDescription: string;
     readonly productStock: string;
     readonly productPrice: string;
     readonly popupProductTitle: Locator;
     readonly popupProductDescription: Locator;
     readonly popupProductPrice: Locator;
     readonly popupProductStock: Locator;
-    readonly popupSubmitButton: string;
+    readonly popupSubmitButton: Locator;
     readonly sortFromGrid: Locator;
     readonly waitForSort: Locator;
+    readonly specificProductTitle: string;
+    readonly specificProductDescription: string;
+    readonly specificProductStock: string;
+    readonly specificProductPrice: string;
+    
 
     constructor(page: Page) {
+      
       this.page = page;
       this.productPanel = 'xpath=//*[@data-testid="products"]'
       this.logoutPanel = 'xpath=//*[@data-testid="logout"]'
+
       this.productTitle = 'xpath=//*[@role="gridcell" and @col-id="title"]'
-      this.productDescription = 'xpath=//*[@role="gridcell" and @col-id="description"]'
       this.productStock = 'xpath=//*[@role="gridcell" and @col-id="stock"]'
       this.productPrice = 'xpath=//*[@role="gridcell" and @col-id="price"]'
+
+      this.specificProductTitle = `//*[contains(text(),"${globalThis.title}")]`
+      this.specificProductDescription = `//div[contains(text(),"${globalThis.title}")]//following-sibling::div[@col-id="description"]`
+      this.specificProductStock = `//div[contains(text(),"${globalThis.title}")]//following-sibling::div[@col-id="stock"]`
+      this.specificProductPrice = `//div[contains(text(),"${globalThis.title}")]//following-sibling::div[@col-id="price"]`
+
       this.popupProductTitle = page.locator('xpath=//*[@data-testid="product_title"]')
       this.popupProductDescription = page.locator('xpath=//*[@data-testid="product_desc"]')
       this.popupProductPrice = page.locator('xpath=//*[@data-testid="product_price"]')
       this.popupProductStock = page.locator('xpath=//*[@data-testid="product_stock"]')
-      this.popupSubmitButton = 'xpath=//*[@type="submit"]'
+      this.popupSubmitButton = page.locator('BUTTON[type="submit"]')
       this.sortFromGrid = page.locator('//*[@aria-sort="none" and @col-id="stock"]')
       this.waitForSort = page.locator('//*[@aria-sort="ascending" and @col-id="stock"]')
     }
 
     async getPanelInfo() {
-      await this.page.waitForTimeout(9000);
+      await this.page.waitForTimeout(3000);
       return [await this.page.innerText(this.productPanel), await this.page.innerText(this.logoutPanel)]
     }
 
     async setOverallProductDetails(productTitle: string, productDescription: string, productPrice: string, productStock: string) {
       await this.page.dblclick(this.productTitle);
-      await this.page.waitForTimeout(9000);
+      await this.page.waitForTimeout(3000);
 
       await this.popupProductTitle.fill('');
       await this.popupProductTitle.fill(productTitle);
@@ -55,15 +66,17 @@ export class ProductPage {
       await this.popupProductStock.fill('');
       await this.popupProductStock.fill(productStock);
 
-      await this.page.keyboard.press('Enter');
+      await this.popupSubmitButton.click()
+      await this.page.waitForTimeout(3000);
     }
 
     async getProductDetails() {
       return [
-        await this.page.innerText(this.productTitle), 
-        await this.page.innerText(this.productDescription),
-        await this.page.innerText(this.productStock),
-        await this.page.innerText(this.productPrice)]
+        await this.page.locator(this.specificProductTitle).isVisible(),
+        await this.page.innerText(this.specificProductDescription),
+        await this.page.innerText(this.specificProductStock),
+        await this.page.innerText(this.specificProductPrice)
+      ]
     }
 
     async setProductStockFromGrid(stock: string) {
@@ -92,12 +105,7 @@ export class ProductPage {
 
     async sortStock() {
       await this.sortFromGrid.click();
-      await this.page.waitForTimeout(9000);
+      await this.page.waitForTimeout(3000);
       await this.waitForSort.waitFor( {state: 'visible'})
-    }
-
-    async getAllStockValues() {
-      const stockValuesFromGrid = await this.page.$$eval(this.productStock, stocks => stocks.map(stock => stock.innerText.trim()))
-      return JSON.stringify(stockValuesFromGrid)
     }
 }

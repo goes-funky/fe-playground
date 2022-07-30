@@ -4,6 +4,10 @@ import { LoginPage } from 'e2e/pageObjects/login-page';
 import { ProductPage } from 'e2e/pageObjects/product-page';
 import { takeScreenshotAfterTestFailed, getEmailAddress, getPassword } from '../utilities/utils'
 
+declare global {
+    var title: string;
+}
+
 test.describe('Product Information functionality', () => {
 
     test.beforeEach(async ({ page }) => {
@@ -14,8 +18,8 @@ test.describe('Product Information functionality', () => {
         await takeScreenshotAfterTestFailed(page, testInfo, path.basename(__filename));
     });
 
-    test.skip('Able to edit product form', async ({ page }) => {
-        const title = 'y42 product one'
+    test('Able to edit product form', async ({ page }) => {
+        globalThis.title = 'A product one'
         const description = 'Description of y42 product one'
         const price = '10'
         const stock = '20'
@@ -24,8 +28,8 @@ test.describe('Product Information functionality', () => {
         const products = new ProductPage(page);
         await login.loginWithCredentials(getEmailAddress(), getPassword())
         await products.setOverallProductDetails(title, description, price, stock);
-        const [productTitleText, productDescriptionText, productStockText, productPriceText] = await products.getProductDetails()
-        expect(productTitleText).toEqual(title)
+        const [isProductTitleCorrect, productDescriptionText, productStockText, productPriceText] = await products.getProductDetails()
+        expect(isProductTitleCorrect).toBe(true)
         expect(productDescriptionText).toEqual(description)
         expect(productStockText).toEqual(stock)
         expect(productPriceText).toContain(price)
