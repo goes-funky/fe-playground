@@ -10,6 +10,11 @@
             <input matInput placeholder="Title" formControlName="title" />
           </mat-form-field>
         </div>
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Brand" formControlName="brand" />
+          </mat-form-field>
+        </div>
       </div>
       <div class="row">
         <div class="col">
@@ -22,7 +27,7 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Price" formControlName="price" />
+            <input type="number" matInput placeholder="Price" formControlName="price" />
             <mat-error *ngIf="form.controls['price'].hasError('required')">
               Price is <strong>required</strong>
             </mat-error>
@@ -30,9 +35,25 @@
         </div>
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Stock" formControlName="stock" />
+            <input type="number" matInput placeholder="Stock" formControlName="stock" />
             <mat-error *ngIf="form.controls['stock'].hasError('required')">
               Stock is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input type="number" matInput placeholder="Rating" formControlName="rating" />
+            <mat-error *ngIf="form.controls['rating'].hasError('required')">
+              Rating is <strong>required</strong>
+            </mat-error>
+            <mat-error *ngIf="form.controls['rating'].hasError('min')">
+              Rating can not be less than <strong>0</strong>
+            </mat-error>
+            <mat-error *ngIf="form.controls['rating'].hasError('max')">
+              Rating can not be greater than <strong>5</strong>
             </mat-error>
           </mat-form-field>
         </div>

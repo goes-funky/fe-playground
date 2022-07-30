@@ -42,17 +42,19 @@ export class ProductDetailComponent implements OnInit {
   constructor(
     private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
     @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
-  ) {}
+  ) { }
 
   readonly form = new FormGroup({
     id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
-    title: new FormControl('', { validators: [Validators.required, Validators.minLength(2)], nonNullable: true }),
+    title: new FormControl('', { validators: [Validators.required, Validators.minLength(2), Validators.max(150)], nonNullable: true }),
+    brand: new FormControl('', { validators: [Validators.required, Validators.minLength(2), Validators.max(150)], nonNullable: true }),
     description: new FormControl('', {
       validators: [Validators.required, Validators.minLength(2), Validators.maxLength(255)],
       nonNullable: true,
     }),
     stock: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
     price: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
+    rating: new FormControl(0, { validators: [Validators.required, Validators.min(0), Validators.max(5)], nonNullable: true }),
   });
 
   ngOnInit(): void {
