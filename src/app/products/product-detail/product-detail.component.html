@@ -7,14 +7,14 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Title" formControlName="title" />
+            <input matInput placeholder="Title" data-testid="product_title" formControlName="title" />
           </mat-form-field>
         </div>
       </div>
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <textarea matInput placeholder="Description" formControlName="description"></textarea>
+            <textarea matInput placeholder="Description" data-testid="product_desc" formControlName="description"></textarea>
           </mat-form-field>
         </div>
       </div>
@@ -22,7 +22,7 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Price" formControlName="price" />
+            <input matInput placeholder="Price" data-testid="product_price" formControlName="price" />
             <mat-error *ngIf="form.controls['price'].hasError('required')">
               Price is <strong>required</strong>
             </mat-error>
@@ -30,7 +30,7 @@
         </div>
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Stock" formControlName="stock" />
+            <input matInput placeholder="Stock" data-testid="product_stock" formControlName="stock" />
             <mat-error *ngIf="form.controls['stock'].hasError('required')">
               Stock is <strong>required</strong>
             </mat-error>

@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "jest --watch",
     "format": "prettier --write .",
-    "e2e": "npx playwright test"
+    "e2e:headless": "npx playwright test --config=e2e/configuration/playwright.config.ts",
+    "e2e": "npx playwright test --headed --config=e2e/configuration/playwright.config.ts"
   },
   "private": true,
   "dependencies": {
@@ -24,6 +25,7 @@
     "@angular/router": "^14.0.0",
     "ag-grid-angular": "^28.0.0",
     "ag-grid-community": "^28.0.2",
+    "ini": "^3.0.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -34,7 +36,7 @@
     "@angular/cli": "~14.0.6",
     "@angular/compiler-cli": "~14.0.0",
     "@briebug/jest-schematic": "~4.0.0",
-    "@playwright/test": "^1.24.0",
+    "@playwright/test": "^1.24.1",
     "@types/jest": "~28.1.0",
     "jest": "~28.1.0",
     "ng-mocks": "^14.1.0",
