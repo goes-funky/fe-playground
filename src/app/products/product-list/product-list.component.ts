@@ -8,7 +8,9 @@ import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+  <button mat-button (click)="onAddProduct()">Add Product</button>
+  <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
@@ -40,7 +42,7 @@ import { ProductService } from '../product.service';
   ],
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) { }
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
@@ -103,7 +105,7 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) => `${(parseFloat(params.value) as number).toFixed(2)}/5`,
     },
   ];
 
@@ -129,6 +131,16 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+      )
+      .subscribe();
+  }
+  onAddProduct(): void {
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: null })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
       )
       .subscribe();
   }

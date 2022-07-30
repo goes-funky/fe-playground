@@ -4,7 +4,7 @@ import { Product, ProductHttpService } from './product-http.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  constructor(private productHttp: ProductHttpService) {}
+  constructor(private productHttp: ProductHttpService) { }
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
@@ -16,6 +16,18 @@ export class ProductService {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
       tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  addProduct(product: Product) {
+    this.loading$$.next(true);
+
+    return timer(750).pipe(
+      tap(() => {
+        const products = this.products$$.getValue();
+        this.products$$.next([...products, product]);
+      }),
       finalize(() => this.loading$$.next(false)),
     );
   }
