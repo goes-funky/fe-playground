@@ -27,7 +27,6 @@ export class LoginPage {
     }
   
     async clickLoginbutton() {
-      // await this.page.waitForTimeout(9000);
       await this.loginButton.click();
     }
 
@@ -35,6 +34,6 @@ export class LoginPage {
         await this.setLoginEmailAddress(emailAddress)
         await this.setLoginpassword(password)
         await this.clickLoginbutton()
-        await this.page.waitForTimeout(9000);
+        await this.page.waitForTimeout(3000);
     }
 }
