@@ -56,6 +56,7 @@ export class ProductDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (!this.product) return;
     this.form.patchValue(this.product);
   }
 

@@ -1,14 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { BehaviorSubject, debounce, debounceTime, filter, map, Observable, of, startWith, Subscription, switchMap, tap, timer } from 'rxjs';
+import { Unsubscribe } from '../../core/decorators/unsubscribe.decorator';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
+@Unsubscribe()
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `<button (click)="addProduct()">Add Product</button><input type="text" [(ngModel)]="searchString" (ngModelChange)="searchChanged($event)">
+  <y42-timer></y42-timer>
+    <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
@@ -39,8 +43,15 @@ import { ProductService } from '../product.service';
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+
+  searchString: string = '';
+  private readonly search$$ = new BehaviorSubject(this.searchString);
+  private searchSubscription: Subscription = this.search$$.pipe(
+    debounceTime(350),
+    tap(res => this.processSearchQuery(res))
+  ).subscribe();
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
@@ -111,6 +122,8 @@ export class ProductListComponent implements OnInit {
     this.productService.getAll().subscribe();
   }
 
+  ngOnDestroy(): void { }
+
   openProduct(params: RowDoubleClickedEvent<Product>): void {
     if (!params.data) {
       return;
@@ -128,8 +141,30 @@ export class ProductListComponent implements OnInit {
       .afterDismissed()
       .pipe(
         filter(Boolean),
-        switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+        switchMap((editedProduct) => this.productService.updateProduct(id, editedProduct)),
       )
       .subscribe();
+  }
+
+  addProduct() {
+    this.bottomSheet
+      .open<ProductDetailComponent>(ProductDetailComponent)
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => {
+          console.log('add product', newProduct)
+          return this.productService.addProduct(newProduct)
+        })
+      )
+      .subscribe();
+  }
+
+  searchChanged(typing: string) {
+    this.search$$.next(typing);
+  }
+
+  processSearchQuery(query: string) {
+    this.productService.searchProducts(query).subscribe();
   }
 }
