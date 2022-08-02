@@ -10,7 +10,7 @@ import { ProductService } from '../product.service';
 @Unsubscribe()
 @Component({
   selector: 'y42-product-list',
-  template: `<button (click)="addProduct()">Add Product</button><input type="text" [(ngModel)]="searchString" (ngModelChange)="searchChanged($event)">
+  template: `<button id="t-addProduct" (click)="addProduct()">Add Product</button><input id="t-search" type="text" [(ngModel)]="searchString" (ngModelChange)="searchChanged($event)">
   <y42-timer></y42-timer>
     <ag-grid-angular
       class="ag-theme-alpine"
