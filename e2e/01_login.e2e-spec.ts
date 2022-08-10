@@ -1,5 +1,5 @@
 import {expect, Page, test} from "@playwright/test";
-import {LoginSelectors} from "./login-selectors";
+import {LoginSelectors} from "./helpers/login-selectors";
 
 test('user login and logout', async ({ page }) => {
     await page.goto('/login');

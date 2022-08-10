@@ -1,6 +1,7 @@
 import {expect, test} from "@playwright/test";
-import {ProductSelectors} from "./product-selectors";
-import {login} from "./login.e2e-spec";
+import {ProductSelectors} from "./helpers/product-selectors";
+import {login} from "./01_login.e2e-spec";
+import {LoginSelectors} from "./helpers/login-selectors";
 
 test('edit products by form', async ({ page }) => {
     await page.goto('/');
@@ -71,7 +72,19 @@ test('check stock column sorting', async ({ page }) => {
     console.log(stocks);
 
     //array is sorted
-    expect(stocks.slice(1).every((item, i) => stocks[i] <= item)).toBeTruthy();
+    await expect(stocks.slice(1).every((item, i) => stocks[i] <= item)).toBeTruthy();
 
+});
+
+test('example with attributes', async ({ page }) => {
+    await page.goto('/login');
+    const webElement = await page.locator(LoginSelectors.EMAIL);
+
+    //email and password are required
+    await expect(webElement.evaluate(e => (e as HTMLInputElement).required)).toBeTruthy();
+    await expect(page.locator(LoginSelectors.PASSWORD).evaluate(e => (e as HTMLInputElement).required)).toBeTruthy();
+
+    //check type of password
+    expect(await page.locator(LoginSelectors.PASSWORD).evaluate(e => (e as HTMLInputElement).type)).toEqual('password');
 });
 
