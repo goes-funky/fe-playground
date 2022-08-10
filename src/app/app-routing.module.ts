@@ -13,6 +13,11 @@ const routes: Routes = [
     canActivate: [LoggedInGuard],
     loadChildren: () => import('./products/products.module').then((m) => m.ProductsModule),
   },
+  {
+    path: 'cart',
+    canActivate: [LoggedInGuard],
+    loadChildren: () => import('./cart/cart.module').then((m) => m.CartModule),
+  },
 ];
 
 @NgModule({

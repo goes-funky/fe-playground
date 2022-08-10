@@ -1,3 +1,4 @@
+import { CartService } from './../../cart/cart.service';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
@@ -41,6 +42,7 @@ import { Product } from '../product-http.service';
 export class ProductDetailComponent implements OnInit {
   constructor(
     private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
+    private readonly cartService: CartService,
     @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
   ) {}
 
@@ -57,6 +59,11 @@ export class ProductDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.form.patchValue(this.product);
+  }
+
+  addToCart() {
+    this.cartService.add(this.product);
+    this.bottomSheetRef.dismiss();
   }
 
   cancel() {

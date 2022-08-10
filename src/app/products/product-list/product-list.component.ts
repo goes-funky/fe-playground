@@ -1,19 +1,24 @@
+import { BehaviorSubject } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { debounceTime, filter, Subject, switchMap, take, takeUntil } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+  <mat-form-field class="search" appearance="fill">
+    <input matInput placeholder="Search..." (input)="search($event)">
+  </mat-form-field>
+  <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
       [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
+      (rowDoubleClicked)="openDetail($event)"
     ></ag-grid-angular>
     <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
   styles: [
@@ -23,6 +28,10 @@ import { ProductService } from '../product.service';
         height: 100%;
         width: 100%;
         position: relative;
+      }
+
+      .search {
+        width: 100%;
       }
 
       ag-grid-angular {
@@ -44,6 +53,8 @@ export class ProductListComponent implements OnInit {
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  readonly destroy$ = new Subject();
+  readonly search$ = new BehaviorSubject<string>('');
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -74,10 +85,8 @@ export class ProductListComponent implements OnInit {
       field: 'stock',
       valueFormatter: (params) => Intl.NumberFormat(undefined).format(params.value),
       editable: true,
-      onCellValueChanged: (params) => {
-        const data: Product = params.data;
-        const newStock: string = params.newValue;
-        this.productService.updateStock(data.id, Number(newStock)).subscribe();
+      onCellValueChanged: ({ data, newValue }) => {
+        this.productService.update(data.id, { stock: +newValue }).pipe(take(1), takeUntil(this.destroy$)).subscribe();
       },
       cellStyle: {
         'border-left': '1px dashed #ddd',
@@ -90,10 +99,8 @@ export class ProductListComponent implements OnInit {
       editable: true,
       valueFormatter: (params) =>
         Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(params.value),
-      onCellValueChanged: (params) => {
-        const data: Product = params.data;
-        const newPrice: string = params.newValue;
-        this.productService.updatePrice(data.id, Number(newPrice)).subscribe();
+      onCellValueChanged: ({ data, newValue }) => {
+        this.productService.update(data.id, { price: +newValue }).pipe(take(1), takeUntil(this.destroy$)).subscribe();
       },
       cellStyle: {
         'border-left': '1px dashed #ddd',
@@ -108,28 +115,32 @@ export class ProductListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.search$.pipe(debounceTime(500), switchMap(v => this.productService.search(v)), takeUntil(this.destroy$)).subscribe();
   }
 
-  openProduct(params: RowDoubleClickedEvent<Product>): void {
-    if (!params.data) {
-      return;
-    }
+  ngOnDestroy(): void {
+    this.destroy$.next(null);
+    this.destroy$.complete();
+  }
 
-    const target = params.event?.target as HTMLElement;
-    if (target.classList.contains('ag-cell-inline-editing')) {
-      return;
+  search({ target }: Event): void {
+    const value = (target as HTMLInputElement).value;
+    if(value) {
+      this.search$.next(value)
     }
+  }
 
-    const product: Product = params.data;
-    const id = product.id;
-    this.bottomSheet
-      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
-      .afterDismissed()
-      .pipe(
-        filter(Boolean),
-        switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
-      )
-      .subscribe();
+  openDetail({ data, event }: RowDoubleClickedEvent<Product>): void {
+    if (data && !(event?.target as HTMLElement).classList.contains('ag-cell-inline-editing')) {
+      this.bottomSheet
+        .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data })
+        .afterDismissed()
+        .pipe(
+          filter(Boolean),
+          switchMap((newProduct) => this.productService.update(data.id, newProduct)),
+          takeUntil(this.destroy$)
+        )
+        .subscribe();
+    }
   }
 }

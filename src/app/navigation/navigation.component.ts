@@ -2,6 +2,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { CartService } from './../cart/cart.service';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -36,7 +37,9 @@ import { AuthService } from '../auth/auth.service';
   ],
 })
 export class NavigationComponent {
-  constructor(private breakpointObserver: BreakpointObserver, private auth: AuthService) {}
+  constructor(private breakpointObserver: BreakpointObserver, private auth: AuthService, private readonly cartService: CartService) {}
+
+  readonly cartItemsCount$$ = this.cartService.items$.pipe(map(p => p.length));
 
   readonly isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)

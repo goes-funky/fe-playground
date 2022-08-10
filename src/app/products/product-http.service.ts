@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+export type ProductId = number;
+
 export interface Product {
-  id: number;
+  id: ProductId;
   title: string;
   description: string;
   price: number;
@@ -15,6 +17,13 @@ export interface Product {
   images: string[];
 }
 
+export interface ResponceMeta {
+  products: Product[];
+  total: number;
+  skip: number;
+  limit: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -23,13 +32,8 @@ export class ProductHttpService {
 
   // https://dummyjson.com/docs/products
 
-  getAll() {
-    return this.http.get<{
-      products: Product[];
-      total: number;
-      skip: number;
-      limit: number;
-    }>('/api/products');
+  search(text: string) {
+    return this.http.get<ResponceMeta>(`/api/products/search?q=${text.trim()}`);
   }
 
   get(id: string) {

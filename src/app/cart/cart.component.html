@@ -1,0 +1,27 @@
+<div style="height: 100%; padding: 1rem; max-width: 800px;">
+    <h2>Cart</h2>
+    <ng-container *ngIf="cartItems$$ | async as carItems">
+        <mat-list *ngIf="carItems.length else empty">
+            <mat-list-item class="item">
+                <div class="title"><strong>Title</strong></div>
+                <div class="count">Count</div>
+            </mat-list-item>
+            <mat-list-item *ngFor="let item of carItems; let i = index" class="item">
+                <div class="title">{{item.data.title}}</div>
+                <mat-form-field class="count"><input matInput type="number" [value]="item.count" (input)="changeCount(i, $event)"></mat-form-field>
+                <div class="remove"><button mat-button color="primary" type="button" (click)="remove(i)">Remove</button></div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>
+                <strong>Total price: {{cartItemsPrice$$ | async}}</strong>
+                <mat-card-actions class="controls">
+                    <button mat-raised-button type="button" (click)="clear()">Clear</button>
+                    <button mat-raised-button color="primary" type="submit">Order</button>
+                </mat-card-actions>
+            </mat-list-item>
+        </mat-list>
+    </ng-container>
+</div>
+<ng-template #empty>
+    <div class="empty-text">No products</div>
+</ng-template>
