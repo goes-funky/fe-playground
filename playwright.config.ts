@@ -14,7 +14,7 @@ const config: PlaywrightTestConfig = {
   testDir: './e2e',
   testMatch: /.*\.e2e-(test|spec)\.(js|ts|mjs)/,
   /* Maximum time one test can run for. */
-  timeout: 30_000,
+  timeout: 100_000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -41,6 +41,7 @@ const config: PlaywrightTestConfig = {
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    headless: false
   },
 
   /* Configure projects for major browsers */
