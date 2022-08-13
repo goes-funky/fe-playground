@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
+import { BehaviorSubject, finalize, interval, map, Observable, startWith, tap, timer, withLatestFrom } from 'rxjs';
 import { ProductHttpService } from './product-http.service';
 import { Product } from '../models';
 
@@ -12,6 +12,11 @@ export class ProductService {
 
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
+  readonly lastUpdatedSec$: Observable<number> = interval(1000 * 60).pipe(
+    startWith(1),
+    withLatestFrom(this.products$.pipe(map(() => new Date()))),
+    map(([_, fetchedDate]: [any, Date]) => Math.round((new Date().getTime() - fetchedDate.getTime()) / 1000)),
+  );
 
   getAll() {
     this.loading$$.next(true);

@@ -1,16 +1,27 @@
-import { lastValueFrom } from 'rxjs';
+import { first, lastValueFrom, take } from 'rxjs';
 import { productHttpServiceMock } from './mocks';
 import { ProductService } from './product.service';
 import { ProductHttpService } from './product-http.service';
 import { Product } from '../models';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
 
 describe('ProductService', () => {
-  const service = new ProductService(productHttpServiceMock as ProductHttpService);
+  let httpServiceMock: ProductHttpService;
+  let service: ProductService;
 
   describe('getAll', () => {
 
+    beforeEach(() => {
+      httpServiceMock = productHttpServiceMock as ProductHttpService;
+      service = new ProductService(httpServiceMock);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should set loading$ to true at the start and set to false in the end', async () => {
-      const loadingSpy = jest.spyOn(service.loading$);
+      const loadingSpy = jest.spyOn(service['loading$$'], 'next');
       expect(loadingSpy).not.toHaveBeenCalled();
       await lastValueFrom(service.getAll());
       expect(loadingSpy).toHaveBeenNthCalledWith(1, true);
@@ -18,14 +29,24 @@ describe('ProductService', () => {
     });
 
     it('should update products$ with products from api', async () => {
-      await expect(lastValueFrom(service.products$)).resolves.toEqual([]);
+      await expect(lastValueFrom(service.products$.pipe(first()))).resolves.toEqual([]);
       await lastValueFrom(service.getAll());
-      const expectedResult = await lastValueFrom(productHttpServiceMock!.getAll());
-      await expect(lastValueFrom(service.products$)).resolves.toEqual(expectedResult.products);
+      const expectedResult = await lastValueFrom(httpServiceMock.getAll());
+      await expect(lastValueFrom(service.products$.pipe(first()))).resolves.toEqual(expectedResult.products);
     });
   });
 
   describe('addProduct', () => {
+
+    beforeEach(() => {
+      httpServiceMock = productHttpServiceMock as ProductHttpService;
+      service = new ProductService(httpServiceMock);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     const product: Product = {
       "id": 4,
       "title": "OPPOF19",
@@ -47,7 +68,7 @@ describe('ProductService', () => {
     };
 
     it('should set loading$ to true at the start and set to false in the end', async () => {
-      const loadingSpy = jest.spyOn(service.loading$);
+      const loadingSpy = jest.spyOn(service['loading$$'], 'next');
       expect(loadingSpy).not.toHaveBeenCalled();
       await lastValueFrom(service.addProduct(product));
       expect(loadingSpy).toHaveBeenNthCalledWith(1, true);
@@ -55,10 +76,24 @@ describe('ProductService', () => {
     });
 
     it('should add product to products$', async () => {
-      await expect(lastValueFrom(service.products$)).resolves.toEqual([]);
+      await expect(lastValueFrom(service.products$.pipe(first()))).resolves.toEqual([]);
       await lastValueFrom(service.addProduct(product));
-      await expect(lastValueFrom(service.products$)).resolves.toEqual([product]);
+      await expect(lastValueFrom(service.products$.pipe(first()))).resolves.toEqual([product]);
     });
 
+  });
+
+  describe('lastUpdatedSec$', () => {
+
+    beforeEach(() => {
+      httpServiceMock = productHttpServiceMock as ProductHttpService;
+      service = new ProductService(httpServiceMock);
+    });
+
+    it('should return amount of seconds since last products$ update with 60s interval', fakeAsync(async () => {
+      tick(1);
+      await expect(lastValueFrom(service.lastUpdatedSec$.pipe(take(1)))).resolves.toEqual(0);
+      flush();
+    }));
   });
 });

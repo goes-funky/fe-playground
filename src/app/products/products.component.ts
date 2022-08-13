@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ProductDetailComponent } from './product-detail/product-detail.component';
-import { filter, switchMap } from 'rxjs';
+import { filter, first, switchMap } from 'rxjs';
 import { ProductService } from './services';
 import { Product } from './models';
 
@@ -17,9 +17,11 @@ export class ProductsComponent {
     private productService: ProductService,
   ) {}
 
+  lastUpdatedSec$ = this.productService.lastUpdatedSec$;
+
   addProduct() {
     const emptyProduct: Product = {
-      id: new Date().getTime(),
+      id: 1,
       title: '',
       description: '',
       price: 0,
@@ -35,6 +37,7 @@ export class ProductsComponent {
       .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: emptyProduct })
       .afterDismissed()
       .pipe(
+        first(),
         filter(Boolean),
         switchMap((newProduct) => this.productService.addProduct(newProduct)),
       )

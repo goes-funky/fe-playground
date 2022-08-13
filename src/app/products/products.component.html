@@ -10,5 +10,8 @@
       + Add Product
     </button>
   </div>
+  <div data-testid="fetch-counter" class="products__subheader">
+    Fetched {{ lastUpdatedSec$ | async }} seconds ago
+  </div>
   <router-outlet></router-outlet>
 </section>

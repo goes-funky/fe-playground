@@ -12,4 +12,10 @@
       margin: 0;
     }
   }
+
+  &__subheader {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 10px;
+  }
 }
