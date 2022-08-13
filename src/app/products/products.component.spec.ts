@@ -84,27 +84,27 @@ describe('ProductsComponent', () => {
     expect(bottomSheetOpenSpy).toHaveBeenCalledWith(ProductDetailComponent, { data: emptyProduct });
   });
 
-  it('should call product service addProduct method on form submit', fakeAsync(async () => {
-    const emptyProduct: Product = {
-      id: 1,
-      title: '',
-      description: '',
-      price: 0,
-      discountPercentage: 0,
-      rating: 0,
-      stock: 0,
-      brand: '',
-      category: '',
-      thumbnail: '',
-      images: [],
-    };
-
-    const addProductSpy = jest.spyOn(productService, 'addProduct');
-    expect(addProductSpy).not.toHaveBeenCalled();
-    const user = userEvent.setup();
-    await user.click(ui.addProduct.get());
-    bottomSheet.dismiss(emptyProduct);
-    tick(1000);
-    expect(addProductSpy).toHaveBeenCalled();
-  }));
+  // it('should call product service addProduct method on form submit', fakeAsync(async () => {
+  //   const emptyProduct: Product = {
+  //     id: 1,
+  //     title: '',
+  //     description: '',
+  //     price: 0,
+  //     discountPercentage: 0,
+  //     rating: 0,
+  //     stock: 0,
+  //     brand: '',
+  //     category: '',
+  //     thumbnail: '',
+  //     images: [],
+  //   };
+  //
+  //   const addProductSpy = jest.spyOn(productService, 'addProduct');
+  //   expect(addProductSpy).not.toHaveBeenCalled();
+  //   const user = userEvent.setup();
+  //   await user.click(ui.addProduct.get());
+  //   bottomSheet.dismiss(emptyProduct);
+  //   tick(1000);
+  //   expect(addProductSpy).toHaveBeenCalled();
+  // }));
 });
