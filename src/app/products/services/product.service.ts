@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
-import { Product, ProductHttpService } from './product-http.service';
+import { ProductHttpService } from './product-http.service';
+import { Product } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -16,6 +17,15 @@ export class ProductService {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
       tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  addProduct(product: Product) {
+    this.loading$$.next(true);
+
+    return timer(750).pipe(
+      tap(() => this._addProduct(product)),
       finalize(() => this.loading$$.next(false)),
     );
   }
@@ -74,5 +84,10 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([product, ...products]);
   }
 }

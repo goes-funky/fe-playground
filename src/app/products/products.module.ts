@@ -2,11 +2,15 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ProductsComponent } from './products.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 
 @NgModule({
   declarations: [ProductsComponent],
   imports: [
     CommonModule,
+    MatButtonModule,
+    MatBottomSheetModule,
     RouterModule.forChild([
       {
         path: '',
