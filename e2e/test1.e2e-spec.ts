@@ -1,21 +1,25 @@
 import { expect, test } from '@playwright/test';
-test('test', async ({ page }) => {
-    // Go to http://localhost:4200/products
-    await page.goto('http://localhost:4200/products');
-    // Go to http://localhost:4200/login
-    await page.goto('http://localhost:4200/login');
-    // Click input[type="email"]
-    await page.locator('input[type="email"]').click();
-    // Fill input[type="email"]
-    await page.locator('input[type="email"]').fill('iris@test.com');
-    // Press Tab
-    await page.locator('input[type="email"]').press('Tab');
-    // Fill input[type="password"]
-    await page.locator('input[type="password"]').fill('123456');
-    // Click button:has-text("Submit")
-    await page.locator('button:has-text("Submit")').click();
+import LoginPage from "e2e/pages/loginPage";
+
+
+test.beforeEach(async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await page.goto("/");
+});
+
+test.afterEach(async ({ page }) => {
+  await page.close();
+});
+
+test('supports double-clicking a row and opening the Product form to edit every property of a Product', async ({ page }) => {
+    const login = new LoginPage(page);
+    await login.logInToY42('iris@test.com','123456');
     await expect(page).toHaveURL('http://localhost:4200/products');
-    // Click text=Stock
-    await page.locator('text=Stock').click();
-  
-  });
+    await page.locator('text=3D Embellishment Art Lamp').dblclick();
+    await page.locator('#mat-input-2').fill('test title');
+    await page.locator('textarea').fill('test description');
+    await page.locator('#mat-input-4').fill('10');
+    await page.locator('#mat-input-5').fill('100');
+    await page.locator('button:has-text("Submit")').click();
+    await page.isVisible('text=test title');
+    });
