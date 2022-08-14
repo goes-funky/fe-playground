@@ -2,6 +2,12 @@
 
 **As agreed in the first interview**, the task is performed using **cypress**
 
+To install cypress (package is already added to the package.json file)
+
+```sh
+npm install
+```
+
 To run the automation script
 
 ```sh
