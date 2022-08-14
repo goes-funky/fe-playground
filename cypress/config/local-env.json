@@ -1,0 +1,10 @@
+{
+  "$schema": "https://on.cypress.io/cypress.schema.json",
+  "baseUrl": "http://localhost:4200",
+  "testFiles": "**/y42-task/*.ts",
+  "env": {
+    "email": "test@mail123.club",
+    "password": "123"
+  },
+  "supportFile": "cypress/support/index-with-ts-declarations.ts"
+}

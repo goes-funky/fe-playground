@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "jest --watch",
     "format": "prettier --write .",
-    "e2e": "npx playwright test"
+    "e2e": "npx playwright test",
+    "local:e2e": "npx cypress run --config-file cypress/config/local-env.json --browser chrome --headed --spec \"cypress/integration/y42-task/*.spec.ts\""
   },
   "private": true,
   "dependencies": {
@@ -24,6 +25,7 @@
     "@angular/router": "^14.0.0",
     "ag-grid-angular": "^28.0.0",
     "ag-grid-community": "^28.0.2",
+    "cypress-xpath": "^2.0.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -36,6 +38,7 @@
     "@briebug/jest-schematic": "~4.0.0",
     "@playwright/test": "^1.24.0",
     "@types/jest": "~28.1.0",
+    "cypress": "^9.6.1",
     "jest": "~28.1.0",
     "ng-mocks": "^14.1.0",
     "prettier": "~2.7.1",
