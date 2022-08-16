@@ -44,18 +44,22 @@ export class ProductListComponent implements OnInit {
       headerName: 'Title',
       field: 'title',
       sort: 'asc',
+      filter: 'title'
     },
     {
       headerName: 'Brand',
       field: 'brand',
+      filter: 'brand'
     },
     {
       headerName: 'Description',
       field: 'description',
+      filter: 'description'
     },
     {
       headerName: 'Stock',
       field: 'stock',
+      filter: 'stock',
       valueFormatter: (params) => Intl.NumberFormat(undefined).format(params.value),
       editable: true,
       onCellValueChanged: (params) => {
@@ -71,6 +75,7 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Price',
       field: 'price',
+      filter: 'price',
       editable: true,
       valueFormatter: (params) =>
         Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(params.value),
@@ -87,6 +92,7 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
+      filter: 'rating',
       valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
     },
   ];
