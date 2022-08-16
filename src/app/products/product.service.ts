@@ -30,7 +30,6 @@ export class ProductService {
         if (!product) {
           return;
         }
-
         this._updateProduct(id, { ...product, ...newProduct });
       }),
       finalize(() => this.loading$$.next(false)),
@@ -74,5 +73,12 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  updateProductList(newProduct: Product) {
+      this.loading$$.next(true)
+      const products: Product[] = this.products$$.getValue()
+      this.products$$.next([...products, newProduct])
+      this.loading$$.next(false)
   }
 }

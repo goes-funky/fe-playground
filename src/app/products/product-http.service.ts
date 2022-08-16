@@ -35,4 +35,8 @@ export class ProductHttpService {
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
   }
+
+  addProduct(productInfo: Product) {
+    return this.http.post<Product>(`api/products/add`, productInfo)
+  }
 }
