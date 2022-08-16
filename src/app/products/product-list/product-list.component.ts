@@ -18,7 +18,7 @@ import { ProductService } from '../product.service';
         (rowDoubleClicked)="openProduct($event)"
     ></ag-grid-angular>
     <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
-  styleUrls: ['./product-list.styles.scss']
+  styleUrls: ['./product-list.component.scss']
 })
 export class ProductListComponent implements OnInit {
   constructor(

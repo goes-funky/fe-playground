@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, tap, timer} from 'rxjs';
 import { Product, ProductHttpService } from './product-http.service';
 
 @Injectable({ providedIn: 'root' })
@@ -11,12 +11,17 @@ export class ProductService {
 
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
+  readonly seconds$$ = new BehaviorSubject('just now');
+  private interval: any;
 
   getAll() {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
       tap((response) => this.products$$.next(response.products)),
-      finalize(() => this.loading$$.next(false)),
+      finalize(() => {
+          this.loading$$.next(false);
+          this.updateCounter();
+      }),
     );
   }
 
@@ -32,7 +37,10 @@ export class ProductService {
         }
         this._updateProduct(id, { ...product, ...newProduct });
       }),
-      finalize(() => this.loading$$.next(false)),
+      finalize(() => {
+        this.loading$$.next(false);
+        this.updateCounter();
+      }),
     );
   }
 
@@ -66,7 +74,10 @@ export class ProductService {
 
         this._updateProduct(id, { ...product, price: newPrice });
       }),
-      finalize(() => this.loading$$.next(false)),
+      finalize(() => {
+        this.loading$$.next(false);
+        this.updateCounter();
+      }),
     );
   }
 
@@ -80,5 +91,23 @@ export class ProductService {
       const products: Product[] = this.products$$.getValue()
       this.products$$.next([...products, newProduct])
       this.loading$$.next(false)
+      this.updateCounter();
+  }
+
+  updateCounter() {
+    const secondsPerMinute = 60;
+    const updateTime = 60000;
+    let minuteCount = 1;
+
+    if(minuteCount === 1) {
+      this.seconds$$.next('just now');
+    }
+
+    clearInterval(this.interval);
+
+    this.interval = setInterval(() => {
+      this.seconds$$.next((minuteCount * secondsPerMinute).toString());
+      minuteCount++;
+    }, updateTime);
   }
 }
