@@ -8,14 +8,17 @@ import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
+  template: `
+    <y42-products-filter></y42-products-filter>
+
+    <ag-grid-angular
+      class='ag-theme-alpine'
+      [rowData]='products$$ | async'
+      [gridOptions]='gridOptions'
+      [columnDefs]='columnDefs'
+      (rowDoubleClicked)='openProduct($event)'
     ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
+    <mat-spinner *ngIf='loading$ | async' [diameter]='36' [mode]="'indeterminate'"></mat-spinner> `,
   styles: [
     `
       :host {
@@ -39,10 +42,14 @@ import { ProductService } from '../product.service';
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+export class ProductListComponent {
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
+    this.productService.products$$.subscribe((products) => {
+      console.log(products);
+    });
+  }
 
-  readonly products$ = this.productService.products$;
+  readonly products$$ = this.productService.products$$;
   readonly loading$ = this.productService.loading$;
 
   readonly gridOptions: GridOptions<Product> = {
@@ -106,10 +113,6 @@ export class ProductListComponent implements OnInit {
       valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
     },
   ];
-
-  ngOnInit(): void {
-    this.productService.getAll().subscribe();
-  }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
     if (!params.data) {

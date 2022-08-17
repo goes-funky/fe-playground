@@ -7,9 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { ProductDetailComponent } from './product-detail.component';
+import { RouterModule } from '@angular/router';
+import {MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material/bottom-sheet';
+import { MatProgressSpinnerModule, MatSpinner } from '@angular/material/progress-spinner';
 
 @NgModule({
-  exports: [ProductDetailComponent],
+  exports: [],
   declarations: [ProductDetailComponent],
   imports: [
     CommonModule,
@@ -18,7 +21,16 @@ import { ProductDetailComponent } from './product-detail.component';
     MatSelectModule,
     MatRadioModule,
     MatCardModule,
+    MatProgressSpinnerModule,
     ReactiveFormsModule,
+    RouterModule.forChild([{
+      path: '',
+      component: ProductDetailComponent
+    }])
   ],
+  providers: [
+    { provide: MatBottomSheetRef, useValue: {} },
+    { provide: MAT_BOTTOM_SHEET_DATA, useValue: {} }
+  ]
 })
 export class ProductDetailModule {}
