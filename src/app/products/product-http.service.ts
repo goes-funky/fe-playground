@@ -19,9 +19,8 @@ export interface Product {
   providedIn: 'root',
 })
 export class ProductHttpService {
-  constructor(private http: HttpClient) {}
-
-  // https://dummyjson.com/docs/products
+  constructor(private http: HttpClient) {
+  }
 
   getAll() {
     return this.http.get<{
@@ -34,5 +33,19 @@ export class ProductHttpService {
 
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
+  }
+
+  getProductsByGivenText(filter: string) {
+    return fetch(`https://dummyjson.com/products/search?q=${filter}`)
+      .then(res => res.json());
+  }
+
+  createProduct(product: Product) {
+    return fetch('https://dummyjson.com/products/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(product),
+    })
+      .then(res => res.json());
   }
 }

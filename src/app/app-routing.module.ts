@@ -9,7 +9,7 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'products',
+    path: '',
     canActivate: [LoggedInGuard],
     loadChildren: () => import('./products/products.module').then((m) => m.ProductsModule),
   },
