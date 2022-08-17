@@ -11,5 +11,6 @@ import { NavigationModule } from './navigation/navigation.module';
   declarations: [AppComponent],
   imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, HttpClientModule, AuthModule, NavigationModule],
   bootstrap: [AppComponent],
+  exports: [],
 })
 export class AppModule {}

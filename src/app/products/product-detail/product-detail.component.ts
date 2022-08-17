@@ -1,7 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
-import { Product } from '../product-http.service';
+import { Product, ProductHttpService } from '../product-http.service';
+import { Router } from '@angular/router';
+import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-detail',
@@ -39,12 +41,19 @@ import { Product } from '../product-http.service';
   ],
 })
 export class ProductDetailComponent implements OnInit {
+
+  submitBtnLoading = false;
+
   constructor(
+    private productService: ProductService,
+    private productHttpService: ProductHttpService,
+    private router: Router,
     private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
     @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
-  ) {}
+  ) {
+  }
 
-  readonly form = new FormGroup({
+  readonly form: FormGroup = new FormGroup({
     id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
     title: new FormControl('', { validators: [Validators.required, Validators.minLength(2)], nonNullable: true }),
     description: new FormControl('', {
@@ -64,6 +73,15 @@ export class ProductDetailComponent implements OnInit {
   }
 
   submit() {
-    this.bottomSheetRef.dismiss(this.form.value);
+    this.createProduct(this.form.value);
+  }
+
+  createProduct(product: any): void {
+    this.submitBtnLoading = true;
+    this.productHttpService.createProduct(product)
+      .then(data => {
+        this.router.navigate(['/products']);
+        this.productService.addNewProduct(data);
+      });
   }
 }
