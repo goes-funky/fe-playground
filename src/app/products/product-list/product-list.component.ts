@@ -6,6 +6,7 @@ import { filter, switchMap, debounceTime, distinctUntilChanged, Subject, takeUnt
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
+import { AgGridAngular } from "ag-grid-angular";
 
 @Component({
   selector: 'y42-product-list',
@@ -99,13 +100,13 @@ export class ProductListComponent implements OnInit, OnDestroy {
     ).subscribe();
   }
 
-  openProduct(params: RowDoubleClickedEvent<Product>): void {
+  openProduct(params: RowDoubleClickedEvent<Product>, grid: AgGridAngular): void {
     if (!params.data) {
       return;
     }
 
-    const target = params.event?.target as HTMLElement;
-    if (target.classList.contains('ag-cell-inline-editing')) {
+    const cells = grid.api.getEditingCells();
+    if (cells.length && cells[0].rowIndex == params.rowIndex) {
       return;
     }
 

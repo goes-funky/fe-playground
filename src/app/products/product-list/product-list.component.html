@@ -6,10 +6,10 @@
 <button mat-icon-button color="primary" title="add new product" aria-label="add" (click)="createProduct()">
     <mat-icon>add</mat-icon>
 </button>
-<ag-grid-angular
+<ag-grid-angular #grid
                  class="ag-theme-alpine"
                  [rowData]="products$ | async"
                  [gridOptions]="gridOptions"
                  [columnDefs]="columnDefs"
-                 (rowDoubleClicked)="openProduct($event)"></ag-grid-angular>
+                 (rowDoubleClicked)="openProduct($event, grid)"></ag-grid-angular>
 <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner>
