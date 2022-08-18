@@ -1,8 +1,8 @@
 import { FormControl } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap, debounceTime, distinctUntilChanged } from 'rxjs';
+import { filter, switchMap, debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
@@ -12,7 +12,9 @@ import { ProductService } from '../product.service';
   templateUrl: 'product-list.component.html',
   styleUrls: ['product-list.component.scss'],
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
+  destroy$ = new Subject<boolean>();
+
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
   readonly products$ = this.productService.products$;
@@ -50,7 +52,9 @@ export class ProductListComponent implements OnInit {
       onCellValueChanged: (params) => {
         const data: Product = params.data;
         const newStock: string = params.newValue;
-        this.productService.updateStock(data.id, Number(newStock)).subscribe();
+        this.productService.updateStock(data.id, Number(newStock)).pipe(
+          takeUntil(this.destroy$)
+        ).subscribe();
       },
       cellStyle: {
         'border-left': '1px dashed #ddd',
@@ -66,7 +70,10 @@ export class ProductListComponent implements OnInit {
       onCellValueChanged: (params) => {
         const data: Product = params.data;
         const newPrice: string = params.newValue;
-        this.productService.updatePrice(data.id, Number(newPrice)).subscribe();
+        this.productService.updatePrice(data.id, Number(newPrice))
+          .pipe(
+            takeUntil(this.destroy$)
+          ).subscribe();
       },
       cellStyle: {
         'border-left': '1px dashed #ddd',
@@ -83,11 +90,12 @@ export class ProductListComponent implements OnInit {
   searchFormControl = new FormControl('');
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.productService.getAll().pipe(takeUntil(this.destroy$)).subscribe();
     this.searchFormControl.valueChanges.pipe(
+      takeUntil(this.destroy$),
       debounceTime(500),
       distinctUntilChanged(),
-      switchMap(searchTerm => this.productService.search(searchTerm ?? ''))
+      switchMap(searchTerm => this.productService.search(searchTerm ?? '')),
     ).subscribe();
   }
 
@@ -107,6 +115,7 @@ export class ProductListComponent implements OnInit {
       .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
       .afterDismissed()
       .pipe(
+        takeUntil(this.destroy$),
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
@@ -131,9 +140,15 @@ export class ProductListComponent implements OnInit {
       .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
       .afterDismissed()
       .pipe(
+        takeUntil(this.destroy$),
         filter(Boolean),
         switchMap((newProduct) => this.productService.createProduct(newProduct)),
       )
       .subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }
