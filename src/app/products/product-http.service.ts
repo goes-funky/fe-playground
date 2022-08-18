@@ -32,6 +32,17 @@ export class ProductHttpService {
     }>('/api/products');
   }
 
+  // https://dummyjson.com/docs/products/search?q=
+
+  search(query: string) {
+    return this.http.get<{
+      products: Product[];
+      total: number;
+      skip: number;
+      limit: number;
+    }>(`/api/products/search?q=${query}`);
+  }
+
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
   }

@@ -20,6 +20,14 @@ export class ProductService {
     );
   }
 
+  search(query: string) {
+    this.loading$$.next(true);
+    return this.productHttp.search(query).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
   updateProduct(id: number, newProduct: Partial<Product>) {
     this.loading$$.next(true);
 
