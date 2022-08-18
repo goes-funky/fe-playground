@@ -3,6 +3,9 @@
     <input [formControl]="searchFormControl" matInput placeholder="search for anything...">
     <mat-icon matSuffix>search</mat-icon>
 </mat-form-field>
+<button mat-icon-button color="primary" title="add new product" aria-label="add">
+    <mat-icon>add</mat-icon>
+</button>
 <ag-grid-angular
                  class="ag-theme-alpine"
                  [rowData]="products$ | async"

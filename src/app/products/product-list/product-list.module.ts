@@ -1,3 +1,4 @@
+import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -29,7 +30,8 @@ import { ReactiveFormsModule } from "@angular/forms";
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatButtonModule
   ],
 })
 export class ProductListModule {}
