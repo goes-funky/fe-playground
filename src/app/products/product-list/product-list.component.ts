@@ -1,7 +1,8 @@
+import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, switchMap, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
@@ -79,8 +80,15 @@ export class ProductListComponent implements OnInit {
     },
   ];
 
+  searchFormControl = new FormControl('');
+
   ngOnInit(): void {
     this.productService.getAll().subscribe();
+    this.searchFormControl.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      switchMap(searchTerm => this.productService.search(searchTerm ?? ''))
+    ).subscribe();
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {

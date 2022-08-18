@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
 import { ProductDetailModule } from '../product-detail/product-detail.module';
 import { ProductListComponent } from './product-list.component';
+import { ReactiveFormsModule } from "@angular/forms";
 
 @NgModule({
   declarations: [ProductListComponent],
@@ -28,6 +29,7 @@ import { ProductListComponent } from './product-list.component';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    ReactiveFormsModule
   ],
 })
 export class ProductListModule {}
