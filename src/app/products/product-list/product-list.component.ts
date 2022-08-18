@@ -112,4 +112,28 @@ export class ProductListComponent implements OnInit {
       )
       .subscribe();
   }
+
+  createProduct() {
+    const product: Product = {
+      id: 0,
+      title: '',
+      description: '',
+      price: 0,
+      discountPercentage: 0,
+      rating: 0,
+      stock: 0,
+      brand: '',
+      category: '',
+      thumbnail: '',
+      images: [],
+    };
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.createProduct(newProduct)),
+      )
+      .subscribe();
+  }
 }
