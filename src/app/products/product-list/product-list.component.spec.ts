@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ComponentFixture, fakeAsync, TestBed, tick } from "@angular/core/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatBottomSheetModule } from "@angular/material/bottom-sheet";
 import { MatButtonModule } from "@angular/material/button";
@@ -22,6 +22,7 @@ describe('ProductListComponent', () => {
 
     let productServiceMock = MockService(ProductService);
     productServiceMock.getAll = jest.fn(() => of({ products: [], total: 0, skip: 0, limit: 0 }));
+    productServiceMock.search = jest.fn(() => of({ products: [], total: 0, skip: 0, limit: 0 }));
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -56,4 +57,10 @@ describe('ProductListComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should search called when text box changed', fakeAsync(() => {
+        component.searchFormControl.setValue('test');
+        tick(500);
+        expect(productServiceMock.search).toHaveBeenCalled();
+    }));
 });
