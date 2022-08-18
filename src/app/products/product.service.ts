@@ -45,6 +45,18 @@ export class ProductService {
     );
   }
 
+  createProduct(newProduct: Product) {
+    this.loading$$.next(true);
+
+    return timer(750).pipe(
+      tap(() => {
+        const products = this.products$$.getValue();
+        this.products$$.next([...products, newProduct]);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
   updateStock(id: number, newStock: number) {
     this.loading$$.next(true);
 
