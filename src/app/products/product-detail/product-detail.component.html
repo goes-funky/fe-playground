@@ -18,7 +18,7 @@
           </mat-form-field>
         </div>
       </div>
-
+     
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
@@ -30,11 +30,26 @@
         </div>
         <div class="col">
           <mat-form-field class="full-width">
+            <input matInput placeholder="Rating" formControlName="rating" type="number" />
+            <mat-error *ngIf="form.controls['rating'].hasError('required')">
+              Rating <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field class="full-width">
             <input matInput placeholder="Stock" formControlName="stock" />
             <mat-error *ngIf="form.controls['stock'].hasError('required')">
               Stock is <strong>required</strong>
             </mat-error>
           </mat-form-field>
+        </div>
+        <div class="row">
+          <div class="col">
+            <mat-form-field class="full-width">
+              <input matInput placeholder="Brand" formControlName="brand" />
+            </mat-form-field>
+          </div>
         </div>
       </div>
     </mat-card-content>

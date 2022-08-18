@@ -1,50 +1,36 @@
+import { query } from '@angular/animations';
+import { NONE_TYPE } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
 import { filter, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
+import { Product, ProductHttpService } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
+  template: `
+    <button class="add-button" mat-raised-button color="primary" (click)="openAddNewProductModal()">Add new product</button>
+    <input id="searchQuery" placeholder="Search products..."/> <button (click)="searchProduct()">Search products</button>
+    <ag-grid-angular
+        class="ag-theme-alpine"
+        [rowData]="products$ | async"
+        [gridOptions]="gridOptions"
+        [columnDefs]="columnDefs"
+        (rowDoubleClicked)="openProduct($event)"
     ></ag-grid-angular>
     <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-
-      ag-grid-angular {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      mat-spinner {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-    `,
-  ],
+  styleUrls: ['./product-list.styles.scss']
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  constructor(
+      private productService: ProductService,
+      private bottomSheet: MatBottomSheet,
+      private productHttpService: ProductHttpService) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
-
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
     animateRows: true,
@@ -131,5 +117,22 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
       .subscribe();
+  }
+
+  openAddNewProductModal() {
+    this.bottomSheet
+        .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, {})
+        .afterDismissed()
+        .pipe(
+            filter(Boolean),
+            switchMap((newProduct: Product) => this.productService.addProduct(newProduct)),
+        )
+        .subscribe((data) => {
+          alert('Sucess-\n New product added successfully. ')//if succesfully added then show success msg
+        });
+  }
+  searchProduct(){
+    const searchQuery=(document.getElementById('searchQuery') as HTMLInputElement).value   
+    this.productService.searchProducts(searchQuery).subscribe();
   }
 }

@@ -19,6 +19,23 @@ export class ProductService {
       finalize(() => this.loading$$.next(false)),
     );
   }
+  searchProducts(searchQuery:string){
+    this.loading$$.next(true);
+    return this.productHttp.searchProducts(searchQuery).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  addProduct( newProduct: Product) {
+    this.loading$$.next(true);
+    return timer(750).pipe(
+      tap(() => {
+        this._addProduct(newProduct);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
 
   updateProduct(id: number, newProduct: Partial<Product>) {
     this.loading$$.next(true);
@@ -30,7 +47,7 @@ export class ProductService {
         if (!product) {
           return;
         }
-
+        
         this._updateProduct(id, { ...product, ...newProduct });
       }),
       finalize(() => this.loading$$.next(false)),
@@ -75,4 +92,10 @@ export class ProductService {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
   }
+  private _addProduct(newProduct: Product){
+    const products = this.products$$.getValue();
+    products.push(newProduct)//add new product 
+    this.products$$.next([...products]);
+  }
+
 }
