@@ -1,3 +1,6 @@
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -22,6 +25,9 @@ import { ProductListComponent } from './product-list.component';
         component: ProductListComponent,
       },
     ]),
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
   ],
 })
 export class ProductListModule {}
