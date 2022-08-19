@@ -20,6 +20,15 @@ export class ProductService {
     );
   }
 
+  createProduct(newProduct: Product) {
+      this.loading$$.next(true);
+
+      return timer(750).pipe(
+          tap(() => this._createProduct(newProduct)),
+          finalize(() => this.loading$$.next(false)),
+      );
+  }
+
   updateProduct(id: number, newProduct: Partial<Product>) {
     this.loading$$.next(true);
 
@@ -69,6 +78,11 @@ export class ProductService {
       }),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+
+  private _createProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
   }
 
   private _updateProduct(id: number, product: Product) {
