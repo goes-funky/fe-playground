@@ -31,7 +31,7 @@ export class ProductService {
     this.timer = interval(60000).pipe(
       startWith(0),
     ).subscribe((val: number) => {
-      this.interval$$.next(val)
+      this.interval$$.next(val*60)
     })
   }
 
