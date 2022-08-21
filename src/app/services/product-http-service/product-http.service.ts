@@ -2,16 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 export interface Product {
-  id: number;
-  title: string;
+  id: number | null;
+  title: string | null;
   description: string;
-  price: number;
-  discountPercentage: number;
-  rating: number;
   stock: number;
-  brand: string;
-  category: string;
-  thumbnail: string;
+  price: number;
+  discountPercentage: number | null;
+  rating: number | null;
+  brand: string | null;
+  category: string | null;
+  thumbnail: string | null;
   images: string[];
 }
 
@@ -35,17 +35,11 @@ export class ProductHttpService {
     return this.http.get<Product>(`/api/products/${id}`);
   }
 
-  getProductsByGivenText(filter: string) {
-    return fetch(`https://dummyjson.com/products/search?q=${filter}`)
-      .then(res => res.json());
+  filterProducts(filter: string) {
+    return this.http.get<{products: Product[]}>(`https://dummyjson.com/products/search?q=${filter}`)
   }
 
   createProduct(product: Product) {
-    return fetch('https://dummyjson.com/products/add', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(product),
-    })
-      .then(res => res.json());
+    return this.http.post<Product>('https://dummyjson.com/products/add', product);
   }
 }

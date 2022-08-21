@@ -1,21 +1,43 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ProductService } from '../../services/product.service';
-import { Product, ProductHttpService } from '../../services/product-http.service';
+import { ProductService } from '../../services/product-service/product.service';
+import { Product, ProductHttpService } from '../../services/product-http-service/product-http.service';
 
 @Component({
   selector: 'y42-products-filter',
   template: `
-    <form [formGroup]='form' (ngSubmit)='onFilterSubmit()' style='margin-bottom: 10px; font-size: 15px'>
-      <mat-form-field class='example-form-field' appearance='fill'>
-        <input matInput type='text' formControlName='filter' placeholder='Type text...' id='searchInput'>
-      </mat-form-field>
-      <button style='margin-left: 5px'>
-        Search
-      </button>
-    </form>
-    <span>Last update: {{lastRequest}} seconds ago.</span>
+    <div class='container'>
+      <form class='form' [formGroup]='form' (ngSubmit)='onFilterSubmit()'>
+        <mat-form-field appearance='legacy'>
+          <mat-label>Type text to filter...</mat-label>
+          <input matInput formControlName='filter' id='filter-input'>
+        </mat-form-field>
+        <button mat-stroked-button color='primary' id='filter-button'>Search</button>
+
+      </form>
+      <span id='last-request-text'>Last update: {{lastRequest}} seconds ago.</span>
+    </div>
   `,
+  styles: [`
+    .form {
+      font-size: 15px;
+    }
+    
+    .container {
+      display: flex;
+    }
+
+    #filter-button {
+      margin-left: 10px;
+    }
+
+    #last-request-text {
+      font-size: 15px;
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+    }
+  `],
 })
 export class ProductFilterComponent implements OnInit {
 
@@ -33,9 +55,9 @@ export class ProductFilterComponent implements OnInit {
   }
 
   onFilterSubmit(): void {
-    this.productHttpService.getProductsByGivenText(this.form.value.filter)
-      .then(
-        (products) => {
+    this.lastRequest = 0;
+    this.productHttpService.filterProducts(this.form.value.filter)
+      .subscribe((products: { products: Product[] }) => {
           this.productService.setProductArray(products.products);
         },
       );

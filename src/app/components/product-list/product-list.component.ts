@@ -3,8 +3,8 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
 import { filter, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../../services/product-http.service';
-import { ProductService } from '../../services/product.service';
+import { Product } from '../../services/product-http-service/product-http.service';
+import { ProductService } from '../../services/product-service/product.service';
 
 @Component({
   selector: 'y42-product-list',
@@ -106,7 +106,7 @@ export class ProductListComponent {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) => `${params.value && (params.value as number).toFixed(2)}/5`,
     },
   ];
 

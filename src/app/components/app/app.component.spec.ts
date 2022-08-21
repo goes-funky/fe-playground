@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockComponents } from 'ng-mocks';
 import { AppComponent } from './app.component';
-import { NavigationComponent } from '../../../shared/components/navigation/navigation.component';
+import { NavigationComponent } from '../navigation/navigation.component';
 
 describe(AppComponent.name, () => {
   let component: AppComponent;
