@@ -1,16 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ProductService } from '../product.service';
-import { Product, ProductHttpService } from '../product-http.service';
+import { ProductService } from '../../services/product.service';
+import { Product, ProductHttpService } from '../../services/product-http.service';
 
 @Component({
   selector: 'y42-products-filter',
   template: `
-    <form [formGroup]='form' (ngSubmit)='onFilterSubmit()' style='margin-bottom: 10px'>
-      <input formControlName='filter' placeholder='Type text...' id='searchInput' type='text'>
-      <button style='margin-left: 5px' type='submit'>Search</button>
+    <form [formGroup]='form' (ngSubmit)='onFilterSubmit()' style='margin-bottom: 10px; font-size: 15px'>
+      <mat-form-field class='example-form-field' appearance='fill'>
+        <input matInput type='text' formControlName='filter' placeholder='Type text...' id='searchInput'>
+      </mat-form-field>
+      <button style='margin-left: 5px'>
+        Search
+      </button>
     </form>
-    <span>Last: update: {{lastRequest}} seconds ago.</span>
+    <span>Last update: {{lastRequest}} seconds ago.</span>
   `,
 })
 export class ProductFilterComponent implements OnInit {

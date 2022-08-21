@@ -3,8 +3,8 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
 import { filter, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
-import { ProductService } from '../product.service';
+import { Product } from '../../services/product-http.service';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'y42-product-list',
@@ -43,11 +43,7 @@ import { ProductService } from '../product.service';
   ],
 })
 export class ProductListComponent {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
-    this.productService.products$$.subscribe((products) => {
-      console.log(products);
-    });
-  }
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
   readonly products$$ = this.productService.products$$;
   readonly loading$ = this.productService.loading$;

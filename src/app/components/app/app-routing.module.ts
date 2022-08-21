@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoggedInGuard } from './auth/logged-in.guard';
+import { LoggedInGuard } from '../../../shared/guards/logged-in.guard';
 
 const routes: Routes = [
   {
@@ -11,7 +11,7 @@ const routes: Routes = [
   {
     path: '',
     canActivate: [LoggedInGuard],
-    loadChildren: () => import('./products/products.module').then((m) => m.ProductsModule),
+    loadChildren: () => import('../products/products.module').then((m) => m.ProductsModule),
   },
 ];
 

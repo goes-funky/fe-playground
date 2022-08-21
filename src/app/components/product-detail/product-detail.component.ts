@@ -1,9 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
-import { Product, ProductHttpService } from '../product-http.service';
+import { Product, ProductHttpService } from '../../services/product-http.service';
 import { Router } from '@angular/router';
-import { ProductService } from '../product.service';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'y42-product-detail',
@@ -77,6 +77,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   createProduct(product: any): void {
+    console.log(product);
     this.submitBtnLoading = true;
     this.productHttpService.createProduct(product)
       .then(data => {

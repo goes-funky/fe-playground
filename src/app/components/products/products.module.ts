@@ -5,13 +5,13 @@ import { ProductsComponent } from './products.component';
 import { AgGridModule } from 'ag-grid-angular';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { ProductDetailModule } from './product-detail/product-detail.module';
-import { ProductListComponent } from './product-list/product-list.component';
+import { ProductDetailModule } from '../product-detail/product-detail.module';
+import { ProductListComponent } from '../product-list/product-list.component';
 import { MatButtonModule } from '@angular/material/button';
-import { ProductFilterComponent } from './product-filter/product-filter.component';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { ProductFilterComponent } from '../product-filter/product-filter.component';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 @NgModule({
   declarations: [ProductsComponent, ProductListComponent, ProductFilterComponent],
   imports: [
@@ -21,8 +21,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatBottomSheetModule,
     ProductDetailModule,
     MatButtonModule,
-    MatFormFieldModule,
     ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
     RouterModule.forChild([
       {
         path: '',
@@ -34,7 +35,7 @@ import { ReactiveFormsModule } from '@angular/forms';
           },
           {
             path: 'detail',
-            loadChildren: () => import('./product-detail/product-detail.module').then((m) => m.ProductDetailModule),
+            loadChildren: () => import('../product-detail/product-detail.module').then((m) => m.ProductDetailModule),
           }
         ],
       },
