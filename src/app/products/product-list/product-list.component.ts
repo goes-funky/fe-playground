@@ -1,21 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, switchMap, tap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
+  templateUrl: './product-list.component.html',
   styles: [
     `
       :host {
@@ -36,14 +30,30 @@ import { ProductService } from '../product.service';
         top: 0.5rem;
         right: 0.5rem;
       }
+
+      .row {
+        display: flex;
+        flex-direction: row;
+      }
+
+      .col {
+        flex: 1;
+        margin-right: 20px;
+      }
+
+      .col-end {
+        justify-content: end;
+        display: flex;
+      }
     `,
   ],
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) { }
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  readonly timeElapsed$ = this.productService.interval$;
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -103,11 +113,26 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) => `${(Number(params.value) as number).toFixed(2)}/5`,
     },
   ];
+  searchKey: FormControl = new FormControl();
 
   ngOnInit(): void {
+    this.productService.getAll().subscribe();
+    this.searchKey.valueChanges.pipe(
+      filter(Boolean),
+      debounceTime(800),
+      distinctUntilChanged())
+      .subscribe((val: string) => this.searchProduct(val));
+  }
+
+  searchProduct(val: string): void {
+    this.productService.searchAll(val).subscribe();
+  }
+
+  reset() {
+    this.searchKey.reset();
     this.productService.getAll().subscribe();
   }
 
@@ -129,6 +154,30 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+      )
+      .subscribe();
+  }
+
+  addProduct() {
+    let product: Product = {
+      id: 0,
+      title: '',
+      description: '',
+      price: undefined,
+      discountPercentage: undefined,
+      rating: undefined,
+      stock: undefined,
+      brand: '',
+      category: '',
+      thumbnail: '',
+      images: []
+    };
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.newProduct(newProduct)),
       )
       .subscribe();
   }

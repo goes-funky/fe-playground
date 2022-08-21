@@ -5,6 +5,14 @@
     </mat-card-header>
     <mat-card-content>
       <div class="row">
+        <div class="col" *ngIf="operation === 'new'">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Id" formControlName="id" />
+            <mat-error *ngIf="form.controls['id'].hasError('required')">
+              Id is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
         <div class="col">
           <mat-form-field class="full-width">
             <input matInput placeholder="Title" formControlName="title" />
@@ -36,10 +44,26 @@
             </mat-error>
           </mat-form-field>
         </div>
+        <div class="col" *ngIf="operation === 'new'">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Rating" formControlName="rating" type="number" max="5" />
+            <mat-error *ngIf="form.controls['rating'].hasError('required')">
+              Rating is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col" *ngIf="operation === 'new'">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Brand" formControlName="brand" />
+            <mat-error *ngIf="form.controls['brand'].hasError('required')">
+              Brand is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
       </div>
     </mat-card-content>
     <mat-card-actions [align]="'end'">
-      <button mat-raised-button type="button" [disabled]="form.invalid" (click)="cancel()">Cancel</button>
+      <button mat-raised-button type="button" (click)="cancel()">Cancel</button>
       <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || form.pristine">Submit</button>
     </mat-card-actions>
   </mat-card>

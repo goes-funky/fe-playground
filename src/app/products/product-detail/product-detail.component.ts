@@ -42,7 +42,7 @@ export class ProductDetailComponent implements OnInit {
   constructor(
     private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
     @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
-  ) {}
+  ) { }
 
   readonly form = new FormGroup({
     id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
@@ -53,9 +53,20 @@ export class ProductDetailComponent implements OnInit {
     }),
     stock: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
     price: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
+    rating: new FormControl(0, { nonNullable: true }),
+    brand: new FormControl('', { nonNullable: true }),
   });
 
+  operation: string = '';
+
   ngOnInit(): void {
+    if (this.product.id) {
+      this.operation = 'update';
+    } else {
+      this.operation = 'new';
+      this.form.controls['rating'].setValidators([Validators.required, Validators.min(0)]);
+      this.form.controls['brand'].setValidators([Validators.required]);
+    }
     this.form.patchValue(this.product);
   }
 
