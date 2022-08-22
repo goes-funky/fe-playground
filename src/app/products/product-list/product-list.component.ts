@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap, interval, Subscription } from 'rxjs';
+import { filter, switchMap, timer, Subscription } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
@@ -40,7 +40,7 @@ import { ProductService } from '../product.service';
 export class ProductListComponent implements OnInit, OnDestroy {
   private intervalSub: Subscription;
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
-    this.intervalSub = interval(60000).subscribe((() => {
+    this.intervalSub = timer(0, 60000).subscribe((() => {
       this.chkUpdatedTime();
     }));
   }
@@ -151,9 +151,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
       .subscribe();
   }
   chkUpdatedTime() {
-    let difference = Math.abs(new Date().getTime() - new Date(this.productService.lastUpdated).getTime());
-    var seconds = Math.floor(difference / 1000);
-    var minutes = Math.floor(difference / 1000 / 60);
-    this.lastUpdatedTime = `${minutes}:${seconds}`;
+    if (this.productService.lastUpdated) {
+      let difference = Math.abs(new Date().getTime() - new Date(this.productService.lastUpdated).getTime());
+      var seconds = Math.floor(difference / 1000);
+      var minutes = Math.floor(difference / 1000 / 60);
+      this.lastUpdatedTime = `${minutes}:${seconds}`;
+    }
   }
 }
