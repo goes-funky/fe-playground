@@ -35,4 +35,15 @@ export class ProductHttpService {
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
   }
+  getSearchedProducts(searchTerm: string) {
+    return this.http.get<{
+      products: Product[];
+      total: number;
+      skip: number;
+      limit: number;
+    }>(`/api/products/search?q=${searchTerm}`);
+  }
+  post(newProd: Partial<Product>) {
+    return this.http.post<Number>(`/api/products/add`, {body: JSON.stringify(newProd)});
+  }
 }

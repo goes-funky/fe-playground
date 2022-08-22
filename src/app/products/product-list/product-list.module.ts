@@ -5,8 +5,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
 import { ProductDetailModule } from '../product-detail/product-detail.module';
+import { ProductSearchModule } from '../product-search/product-search.module'
 import { ProductListComponent } from './product-list.component';
-
+import { MatButtonModule } from '@angular/material/button';
 @NgModule({
   declarations: [ProductListComponent],
   exports: [ProductListComponent],
@@ -16,6 +17,8 @@ import { ProductListComponent } from './product-list.component';
     MatProgressSpinnerModule,
     MatBottomSheetModule,
     ProductDetailModule,
+    MatButtonModule,
+    ProductSearchModule,
     RouterModule.forChild([
       {
         path: '',
@@ -24,4 +27,4 @@ import { ProductListComponent } from './product-list.component';
     ]),
   ],
 })
-export class ProductListModule {}
+export class ProductListModule { }

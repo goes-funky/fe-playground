@@ -1,21 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, switchMap, interval, Subscription } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
+  templateUrl: './product-list.component.html',
   styles: [
     `
       :host {
@@ -36,12 +29,22 @@ import { ProductService } from '../product.service';
         top: 0.5rem;
         right: 0.5rem;
       }
+      .product-header-container{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
-
+export class ProductListComponent implements OnInit, OnDestroy {
+  private intervalSub: Subscription;
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
+    this.intervalSub = interval(60000).subscribe((() => {
+      this.chkUpdatedTime();
+    }));
+  }
+  lastUpdatedTime: any = null;
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
 
@@ -110,6 +113,11 @@ export class ProductListComponent implements OnInit {
   ngOnInit(): void {
     this.productService.getAll().subscribe();
   }
+  ngOnDestroy(): void {
+    if (this.intervalSub) {
+      this.intervalSub.unsubscribe();
+    }
+  }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
     if (!params.data) {
@@ -131,5 +139,22 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
       .subscribe();
+  }
+  addProduct() {
+    const newprod: Partial<Product> = {};
+    this.bottomSheet.open<ProductDetailComponent, Partial<Product>, Product>(ProductDetailComponent, { data: newprod })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
+      )
+      .subscribe();
+  }
+  chkUpdatedTime() {
+    let difference = Math.abs(new Date().getTime() - new Date(this.productService.lastUpdated).getTime());
+    debugger;
+    var seconds = Math.floor(difference / 1000);
+    var minutes = Math.floor(difference / 1000 / 60);
+    this.lastUpdatedTime = `${minutes}:${seconds}`;
   }
 }

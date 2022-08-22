@@ -1,0 +1,8 @@
+<div class="product-header-container">
+  <div class="search-container"><y42-product-search></y42-product-search></div>
+  <div class="last-update-container" *ngIf="lastUpdatedTime">Fetched {{lastUpdatedTime}} ago</div>
+  <div class="add-btn-container"><button mat-button (click)="addProduct()">Add Products</button></div>
+</div>
+<ag-grid-angular class="ag-theme-alpine" [rowData]="products$ | async" [gridOptions]="gridOptions"
+  [columnDefs]="columnDefs" (rowDoubleClicked)="openProduct($event)"></ag-grid-angular>
+<mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner>
