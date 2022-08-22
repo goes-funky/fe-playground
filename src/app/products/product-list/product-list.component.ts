@@ -152,7 +152,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
   chkUpdatedTime() {
     let difference = Math.abs(new Date().getTime() - new Date(this.productService.lastUpdated).getTime());
-    debugger;
     var seconds = Math.floor(difference / 1000);
     var minutes = Math.floor(difference / 1000 / 60);
     this.lastUpdatedTime = `${minutes}:${seconds}`;
