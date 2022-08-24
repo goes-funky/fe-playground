@@ -7,7 +7,7 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="email" type="email" autocomplete="off" [formControl]="form.controls.email" />
+            <input matInput placeholder="email" data-test="email" type="email" autocomplete="off" [formControl]="form.controls.email" />
             <mat-error *ngIf="form.controls['email'].errors?.['required']">
               Email is <strong>required</strong>
             </mat-error>
@@ -18,7 +18,7 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Password" type="password" [formControl]="form.controls.password" />
+            <input matInput placeholder="Password" data-test="password" type="password" [formControl]="form.controls.password" />
             <mat-error *ngIf="form.controls['password'].errors?.['required']">
               Password is <strong>required</strong>
             </mat-error>
@@ -30,7 +30,7 @@
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Submit</button>
+      <button mat-raised-button color="primary" data-test="submit" type="submit" [disabled]="form.invalid">Submit</button>
     </mat-card-actions>
   </mat-card>
 </form>
