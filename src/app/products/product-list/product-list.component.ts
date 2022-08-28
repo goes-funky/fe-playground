@@ -6,9 +6,17 @@ import { ProductDetailComponent } from '../product-detail/product-detail.compone
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
+
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+  <p> {{ today |  dateAgo | async }}</p>
+  <input type="text" (keyup)="searchFilter($any($event.target).value)" 
+  placeholder="Filter..." /> 
+  <br>
+
+
+  <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
@@ -40,10 +48,17 @@ import { ProductService } from '../product.service';
   ],
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
+    
+  }
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  
+  searchValue:string='';
+  today = new Date();
+
+ 
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -109,6 +124,10 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit(): void {
     this.productService.getAll().subscribe();
+   
+  }
+ searchFilter(value:string){     
+    this.productService.searchFilter(value).subscribe((response=>console.log(response)));
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {

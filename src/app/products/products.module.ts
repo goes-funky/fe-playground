@@ -3,8 +3,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ProductsComponent } from './products.component';
 
+
 @NgModule({
   declarations: [ProductsComponent],
+
   imports: [
     CommonModule,
     RouterModule.forChild([

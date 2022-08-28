@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
+import { BehaviorSubject, finalize, map, Observable, tap, timer } from 'rxjs';
 import { Product, ProductHttpService } from './product-http.service';
 
 @Injectable({ providedIn: 'root' })
@@ -75,4 +75,14 @@ export class ProductService {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
   }
+
+  searchFilter(value:string){
+    this.loading$$.next(true);
+    return this.productHttp.getFilterResult(value).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+    
+    }
+
 }

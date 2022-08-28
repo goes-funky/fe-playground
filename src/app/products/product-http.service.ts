@@ -35,4 +35,9 @@ export class ProductHttpService {
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
   }
+  getFilterResult(value:string){
+    return this.http.get< {products: Product[];}>(`https://dummyjson.com/products/search/?q=${value}`);
+  }
+
+  
 }
