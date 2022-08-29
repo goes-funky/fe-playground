@@ -15,6 +15,13 @@ export interface Product {
   images: string[];
 }
 
+export interface ProductPagingResponse {
+  products: Array<Product>;
+  total: number;
+  skip: number;
+  limit: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -24,15 +31,18 @@ export class ProductHttpService {
   // https://dummyjson.com/docs/products
 
   getAll() {
-    return this.http.get<{
-      products: Product[];
-      total: number;
-      skip: number;
-      limit: number;
-    }>('/api/products');
+    return this.http.get<ProductPagingResponse>('/api/products');
   }
 
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
   }
+
+  post(payload: Partial<Product>) {
+    return this.http.post<Partial<Product>>(`/api/products/add`, {data: JSON.stringify(payload)})
+ }
+
+search(key: string) {
+    return this.http.get<ProductPagingResponse>(`api/products/search?q=${key}`)
+ }
 }

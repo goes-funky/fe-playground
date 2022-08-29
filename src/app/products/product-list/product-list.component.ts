@@ -1,50 +1,29 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, interval, switchMap, tap } from 'rxjs';
+
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-
-      ag-grid-angular {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      mat-spinner {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-    `,
-  ],
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
+  searchKey = new FormControl('');
+  seconds = 0;
+  fetchTime = 0;
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
 
+   /**
+   * Product table options
+   */
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
     animateRows: true,
@@ -55,6 +34,9 @@ export class ProductListComponent implements OnInit {
       resizable: true,
     },
   };
+  /**
+   * Product table columns
+   */
   readonly columnDefs: Array<ColDef<Product>> = [
     {
       headerName: 'Title',
@@ -89,7 +71,7 @@ export class ProductListComponent implements OnInit {
       field: 'price',
       editable: true,
       valueFormatter: (params) =>
-        Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(params.value),
+      Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(params.value),
       onCellValueChanged: (params) => {
         const data: Product = params.data;
         const newPrice: string = params.newValue;
@@ -106,22 +88,49 @@ export class ProductListComponent implements OnInit {
       valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
     },
   ];
+  
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+
 
   ngOnInit(): void {
+    this.productService.getAll().subscribe(() => this._resetToCurrentTime());
+    this.searchKey.valueChanges
+      .pipe(
+        filter(Boolean),
+        switchMap((searchWord) => this.productService.searchProduct(searchWord)),
+        tap(() => this._resetToCurrentTime()),
+      )
+      .subscribe();
+    interval(1000)
+      .pipe(tap(() => (this.seconds = this._getCurrentTimeSeconds())))
+      .subscribe();
+  }
+
+  /**
+   * its reset search param value and refetch product list
+   */
+   clearFilter() {
+    this.searchKey.reset();
     this.productService.getAll().subscribe();
   }
 
-  openProduct(params: RowDoubleClickedEvent<Product>): void {
-    if (!params.data) {
+  /**
+   * call when user select a product whit double click on product row
+   * open a dialog and patch selected row data to form value for edit product
+   * After submitting the form, the dialog will be closed and the product will be updated
+   * @param rowEvent grid row data
+   */
+   editProduct(rowEvent: RowDoubleClickedEvent<Product>): void {
+    if (!rowEvent.data) {
       return;
     }
 
-    const target = params.event?.target as HTMLElement;
+    const target = rowEvent.event?.target as HTMLElement;
     if (target.classList.contains('ag-cell-inline-editing')) {
       return;
     }
 
-    const product: Product = params.data;
+    const product: Product = rowEvent.data;
     const id = product.id;
     this.bottomSheet
       .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
@@ -131,5 +140,39 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
       .subscribe();
+  }
+
+  /**
+   * this method fire when user click on "Add New Product" button
+   * first time open a material bottomSheet and new product form
+   * when user submitted that form afterDismissed method called and return form value
+   * in the last we save form value such as new product in product list
+   */
+   addProduct(): void {
+    this.bottomSheet
+      .open<ProductDetailComponent, Partial<Product>, Product>(ProductDetailComponent, { data: {} })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
+      )
+      .subscribe();
+  }
+
+  /**
+   * this method reset time
+   * @returns return current time second
+   */
+   private _getCurrentTimeSeconds(): number {
+    return Math.round(new Date().getTime() - this.fetchTime) / 1000;
+  }
+
+  /**
+   * this method rest to current time
+   * set current time to seconds value
+   */
+  private _resetToCurrentTime(): void {
+    this.fetchTime = new Date().getTime();
+    this.seconds = 0;
   }
 }

@@ -75,4 +75,30 @@ export class ProductService {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
   }
+
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
+  }
+
+  addProduct(newProduct: Product) {
+    this.loading$$.next(true);
+    return this.productHttp.post(newProduct).pipe(
+      tap(() => {
+        if (!newProduct) {
+          return;
+        }
+        this._addProduct(newProduct);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  searchProduct(term: string) {
+    this.loading$$.next(true);
+    return this.productHttp.search(term).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
 }

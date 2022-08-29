@@ -1,68 +1,64 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+
 import { Product } from '../product-http.service';
 
+/**
+ * a component for add or edit product whit reactive form
+ */
 @Component({
   selector: 'y42-product-detail',
   templateUrl: './product-detail.component.html',
-  styles: [
-    `
-      .full-width {
-        width: 100%;
-      }
-
-      .shipping-card {
-        min-width: 120px;
-        margin: 20px auto;
-      }
-
-      .mat-radio-button {
-        display: block;
-        margin: 5px 0;
-      }
-
-      .row {
-        display: flex;
-        flex-direction: row;
-      }
-
-      .col {
-        flex: 1;
-        margin-right: 20px;
-      }
-
-      .col:last-child {
-        margin-right: 0;
-      }
-    `,
-  ],
+  styleUrls: ['./product-detail.component.scss'],
 })
 export class ProductDetailComponent implements OnInit {
+  form: FormGroup = new FormGroup({});
+
+      /**
+     * generate a new reactive form group whit form builder
+     * @param bottomSheetRef reference of opened material bottomSheet
+     * @param product selected product value
+     * @param _fb reactive form builder
+     */
   constructor(
     private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
     @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
-  ) {}
-
-  readonly form = new FormGroup({
-    id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
-    title: new FormControl('', { validators: [Validators.required, Validators.minLength(2)], nonNullable: true }),
-    description: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(2), Validators.maxLength(255)],
-      nonNullable: true,
-    }),
-    stock: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
-    price: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
+    private _fb: FormBuilder,
+  ) {
+    this.form = this._fb.group({
+      id: [null, {nonNullable: true}],
+      title: [null, {validators: [Validators.required, Validators.minLength(2)], nonNullable: true}],
+      description: [
+          null,
+          {
+              validators: [Validators.required, Validators.minLength(2), Validators.maxLength(255)],
+              nonNullable: true,
+          },
+      ],
+      stock: [0, {validators: [Validators.required, Validators.min(0)], nonNullable: true}],
+      price: [0, {validators: [Validators.required, Validators.min(0)], nonNullable: true}],
+      rating: [0, {nonNullable: true}],
+      brand: [null, {nonNullable: true}],
   });
-
-  ngOnInit(): void {
-    this.form.patchValue(this.product);
   }
 
+  ngOnInit(): void {
+    if (this.product.id) {
+      this.form.patchValue(this.product);
+  }
+  }
+
+  /**
+     * call when user close dialog and dismiss that
+     */
   cancel() {
     this.bottomSheetRef.dismiss();
   }
 
+  /**
+     * call when user submitted form and emit form value
+     */
   submit() {
     this.bottomSheetRef.dismiss(this.form.value);
   }

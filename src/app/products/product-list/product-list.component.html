@@ -1,0 +1,24 @@
+<div class="row">
+    <div class="col">
+        <mat-form-field class="full-width">
+            <input matInput size="lg" placeholder="Search Product" [formControl]="searchKey"/>
+            <button *ngIf="searchKey.value" matSuffix mat-icon-button aria-label="Clear" (click)="clearFilter()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+    <div class="col col-end">
+        <button mat-button color="primary" (click)="addProduct()">Add New Product</button>
+    </div>
+</div>
+<div class="row">
+    <p>Fetched {{seconds}} seconds ago</p>
+</div>
+<ag-grid-angular
+        class="ag-theme-alpine"
+        [rowData]="products$ | async"
+        [gridOptions]="gridOptions"
+        [columnDefs]="columnDefs"
+        (rowDoubleClicked)="editProduct($event)"
+></ag-grid-angular>
+<mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner>
