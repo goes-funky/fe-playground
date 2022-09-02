@@ -40,5 +40,18 @@
     "ng-mocks": "^14.1.0",
     "prettier": "~2.7.1",
     "typescript": "~4.7.2"
-  }
+  },
+  "description": "**Important**: Please **fork the repository before cloning**. Cloning this repository directly will result in an error when pushing your changes if you're not authorized with our organization.",
+  "main": "jest.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xhoni1029/fe-playground.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xhoni1029/fe-playground/issues"
+  },
+  "homepage": "https://github.com/xhoni1029/fe-playground#readme"
 }
