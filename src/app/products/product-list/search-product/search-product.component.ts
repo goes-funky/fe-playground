@@ -14,7 +14,7 @@ import {map} from "rxjs/operators";
 export class SearchProductComponent implements OnInit {
 
   searchParam$: Observable<string> =  this.activatedRoute.queryParams.pipe(
-      debounceTime(500),
+      debounceTime(900),
       mergeMap((query: any) => {
         if ('search' in query) {
             return this.productService.search(query.search).pipe(map(() => query.search));
