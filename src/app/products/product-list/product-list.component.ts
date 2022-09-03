@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import {filter, switchMap, tap} from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
@@ -9,7 +9,9 @@ import { ProductService } from '../product.service';
 @Component({
   selector: 'y42-product-list',
   template: `
-    <y42-search-product></y42-search-product>
+    <div class="sub-header">
+      <y42-search-product></y42-search-product> <span>{{sinceFetchedLabel$ | async}}</span>
+    </div>
     <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
@@ -25,6 +27,11 @@ import { ProductService } from '../product.service';
         height: 100%;
         width: 100%;
         position: relative;
+        .sub-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
       }
 
       ag-grid-angular {
@@ -41,11 +48,12 @@ import { ProductService } from '../product.service';
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
   readonly products$ = this.productService.products$;
-  readonly loading$ = this.productService.loading$;
+  readonly loading$ = this.productService.loading$.pipe(tap((r) => console.log('99loading', r)));
+  readonly sinceFetchedLabel$ = this.productService.sinceFetched$;
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -133,5 +141,9 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
       .subscribe();
+  }
+
+  ngOnDestroy() {
+    this.productService.clearLabelInterval();
   }
 }

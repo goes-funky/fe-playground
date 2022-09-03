@@ -24,6 +24,7 @@
     "@angular/router": "^14.0.0",
     "ag-grid-angular": "^28.0.0",
     "ag-grid-community": "^28.0.2",
+    "luxon": "^3.0.3",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -36,6 +37,7 @@
     "@briebug/jest-schematic": "~4.0.0",
     "@playwright/test": "^1.24.0",
     "@types/jest": "~28.1.0",
+    "@types/luxon": "^3.0.1",
     "jest": "~28.1.0",
     "ng-mocks": "^14.1.0",
     "prettier": "~2.7.1",

@@ -1,21 +1,27 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
 import { Product, ProductHttpService } from './product-http.service';
-
+import { DateTime, Interval } from 'luxon';
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   constructor(private productHttp: ProductHttpService) {}
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
+  private whenFetched!: DateTime;
+  private readonly sinceFetched$$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private intervalRef: any;
 
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
+  readonly sinceFetched$: Observable<string> = this.sinceFetched$$;
+
 
   getAll() {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
       tap((response) => this.products$$.next(response.products)),
+      tap(() => this.generateInterval()),
       finalize(() => this.loading$$.next(false)),
     );
   }
@@ -24,7 +30,8 @@ export class ProductService {
     this.loading$$.next(true);
     return this.productHttp.search(searchValue).pipe(
       tap((response) => this.products$$.next(response.products)),
-      finalize(() => this.loading$$.next(false)),
+        tap(() => this.generateInterval()),
+        finalize(() => this.loading$$.next(false)),
     );
   }
 
@@ -79,7 +86,32 @@ export class ProductService {
     );
   }
 
-  private _updateProduct(id: number, product: Product) {
+    private generateInterval() {
+        if (this.intervalRef) {
+            this.clearLabelInterval();
+        }
+        this.whenFetched = DateTime.now();
+        this.generateLabel();
+        this.intervalRef = setInterval(() => {
+            this.generateLabel();
+        }, 60000);
+    }
+
+    private generateLabel() {
+        let label = 'Fetched now';
+        const duration = Interval.fromDateTimes(this.whenFetched, DateTime.now()).length('seconds');
+        if (Math.round(duration)) {
+            label = `Fetched ${Math.round(duration)} seconds ago`;
+        }
+        this.sinceFetched$$.next(label);
+    }
+
+    clearLabelInterval() {
+        clearInterval(this.intervalRef);
+    }
+
+
+    private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
   }
