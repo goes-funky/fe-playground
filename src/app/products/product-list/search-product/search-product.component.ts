@@ -1,9 +1,8 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {debounceTime, iif, mergeMap, Observable, of, tap} from "rxjs";
+import {debounceTime, mergeMap, Observable, of} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ProductService} from "../../product.service";
 import {map} from "rxjs/operators";
-import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'y42-search-product',
@@ -16,11 +15,12 @@ export class SearchProductComponent implements OnInit {
 
   searchParam$: Observable<string> =  this.activatedRoute.queryParams.pipe(
       debounceTime(500),
-      mergeMap((query: any) => iif(
-          () => 'search' in query,
-          this.productService.search(query.search).pipe(map(() => query.search)),
-          of('')
-      ))
+      mergeMap((query: any) => {
+        if ('search' in query) {
+            return this.productService.search(query.search).pipe(map(() => query.search));
+        }
+        return of('')
+      })
   );
 
   constructor(
