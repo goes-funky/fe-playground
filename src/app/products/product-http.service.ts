@@ -23,10 +23,15 @@ export interface SearchProductDTO {
   limit: number;
 }
 
+export interface AddProductDTO {
+  id: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ProductHttpService {
+  private namespace = 'api/products';
   constructor(private http: HttpClient) {}
 
   // https://dummyjson.com/docs/products
@@ -37,14 +42,18 @@ export class ProductHttpService {
       total: number;
       skip: number;
       limit: number;
-    }>('/api/products');
+    }>(this.namespace);
   }
 
   get(id: string) {
-    return this.http.get<Product>(`/api/products/${id}`);
+    return this.http.get<Product>(`${this.namespace}/${id}`);
   }
 
   search(value: string) {
-    return this.http.get<SearchProductDTO>(`https://dummyjson.com/products/search`, {params: {q: value}})
+    return this.http.get<SearchProductDTO>(`${this.namespace}/search`, {params: {q: value}})
+  }
+
+  add(value: Omit<Product, 'id'>): Observable<AddProductDTO> {
+    return this.http.post<AddProductDTO>(`${this.namespace}/add`, JSON.stringify(value));
   }
 }

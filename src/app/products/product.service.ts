@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
-import { Product, ProductHttpService } from './product-http.service';
+import { Product, ProductHttpService} from './product-http.service';
 import { DateTime, Interval } from 'luxon';
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -84,6 +84,17 @@ export class ProductService {
       }),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+
+  addProduct(newProduct: Omit<Product, 'id'>) {
+      this.loading$$.next(true);
+      return this.productHttp.add(newProduct).pipe(
+          tap(res => {
+              const products = this.products$$.getValue();
+              this.products$$.next([{...newProduct, id: res.id, rating: 0}, ...products]);
+          }),
+          finalize(() => this.loading$$.next(false)),
+      );
   }
 
     private generateInterval() {

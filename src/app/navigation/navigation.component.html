@@ -9,6 +9,7 @@
   >
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
+      <button mat-list-item (click)="addProduct()">Add Product</button>
       <a mat-list-item [routerLink]="['products']">Products</a>
       <a mat-list-item [routerLink]="'/logout'">Logout</a>
     </mat-nav-list>

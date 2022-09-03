@@ -1,8 +1,13 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import {combineLatest, firstValueFrom, Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from '../auth/auth.service';
+import {MatBottomSheet} from "@angular/material/bottom-sheet";
+import {ProductDetailComponent} from "../products/product-detail/product-detail.component";
+import {Product} from "../products/product-http.service";
+import {ProductService} from "../products/product.service";
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'y42-navigation',
@@ -36,7 +41,13 @@ import { AuthService } from '../auth/auth.service';
   ],
 })
 export class NavigationComponent {
-  constructor(private breakpointObserver: BreakpointObserver, private auth: AuthService) {}
+  constructor(
+      private breakpointObserver: BreakpointObserver,
+      private auth: AuthService,
+      private bottomSheet: MatBottomSheet,
+      private productService: ProductService,
+      private _snackBar: MatSnackBar
+  ) {}
 
   readonly isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)
@@ -47,4 +58,18 @@ export class NavigationComponent {
   readonly sideNavOpened$ = combineLatest([this.isHandset$, this.loggedIn$]).pipe(
     map(([handset, loggedIn]) => !handset && loggedIn),
   );
+
+  async addProduct() {
+    const res = await firstValueFrom(this.bottomSheet
+        .open<ProductDetailComponent, any, Product>(ProductDetailComponent, { data: {} })
+        .afterDismissed());
+    if (!res) {
+      return;
+    }
+    const {id, ...newProduct} = res;
+    await firstValueFrom(this.productService.addProduct(newProduct));
+    this._snackBar.open('Product added', 'ok!', {
+      duration: 2000
+    });
+  }
 }

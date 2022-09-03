@@ -9,6 +9,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { NavigationComponent } from './navigation.component';
+import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 @NgModule({
   imports: [
@@ -20,6 +22,8 @@ import { NavigationComponent } from './navigation.component';
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
+    MatBottomSheetModule,
+    MatSnackBarModule
   ],
   declarations: [NavigationComponent],
   exports: [NavigationComponent],
