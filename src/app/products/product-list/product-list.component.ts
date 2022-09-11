@@ -8,14 +8,17 @@ import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+    <button mat-raised-button color="primary" (click)="addProduct()">Add Product</button>
+    <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
       [columnDefs]="columnDefs"
       (rowDoubleClicked)="openProduct($event)"
     ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
+    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner>
+  `,
   styles: [
     `
       :host {
@@ -35,6 +38,10 @@ import { ProductService } from '../product.service';
         position: absolute;
         top: 0.5rem;
         right: 0.5rem;
+      }
+
+      button.mat-raised-button {
+        margin-bottom: 1rem;
       }
     `,
   ],
@@ -129,6 +136,17 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+      )
+      .subscribe();
+  }
+
+  addProduct() {
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent)
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
       )
       .subscribe();
   }

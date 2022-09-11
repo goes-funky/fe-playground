@@ -47,6 +47,7 @@ export class ProductDetailComponent implements OnInit {
   readonly form = new FormGroup({
     id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
     title: new FormControl('', { validators: [Validators.required, Validators.minLength(2)], nonNullable: true }),
+    brand: new FormControl('', { validators: [Validators.required], nonNullable: true }),
     description: new FormControl('', {
       validators: [Validators.required, Validators.minLength(2), Validators.maxLength(255)],
       nonNullable: true,
@@ -56,7 +57,7 @@ export class ProductDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.form.patchValue(this.product);
+    this.form.patchValue(this.product || {});
   }
 
   cancel() {

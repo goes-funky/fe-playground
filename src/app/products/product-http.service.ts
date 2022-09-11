@@ -19,6 +19,8 @@ export interface Product {
   providedIn: 'root',
 })
 export class ProductHttpService {
+  readonly ADD_URI = '/api/products/add';
+
   constructor(private http: HttpClient) {}
 
   // https://dummyjson.com/docs/products
@@ -34,5 +36,9 @@ export class ProductHttpService {
 
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
+  }
+
+  addProduct(product: Partial<Product>) {
+    return this.http.post<Product>(this.ADD_URI, product);
   }
 }
