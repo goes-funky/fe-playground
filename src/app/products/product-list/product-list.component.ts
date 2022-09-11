@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, Subject, switchMap, takeUntil } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <y42-product-search></y42-product-search>
     <button mat-raised-button color="primary" (click)="addProduct()">Add Product</button>
     <ag-grid-angular
       class="ag-theme-alpine"
@@ -43,10 +45,14 @@ import { ProductService } from '../product.service';
       button.mat-raised-button {
         margin-bottom: 1rem;
       }
+
+      y42-product-search {
+        display: block;
+      }
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
   readonly products$ = this.productService.products$;
@@ -84,7 +90,7 @@ export class ProductListComponent implements OnInit {
       onCellValueChanged: (params) => {
         const data: Product = params.data;
         const newStock: string = params.newValue;
-        this.productService.updateStock(data.id, Number(newStock)).subscribe();
+        this.productService.updateStock(data.id, Number(newStock)).pipe(takeUntil(this.takeUntil$)).subscribe();
       },
       cellStyle: {
         'border-left': '1px dashed #ddd',
@@ -100,7 +106,7 @@ export class ProductListComponent implements OnInit {
       onCellValueChanged: (params) => {
         const data: Product = params.data;
         const newPrice: string = params.newValue;
-        this.productService.updatePrice(data.id, Number(newPrice)).subscribe();
+        this.productService.updatePrice(data.id, Number(newPrice)).pipe(takeUntil(this.takeUntil$)).subscribe();
       },
       cellStyle: {
         'border-left': '1px dashed #ddd',
@@ -114,8 +120,10 @@ export class ProductListComponent implements OnInit {
     },
   ];
 
+  readonly takeUntil$: Subject<void> = new Subject();
+
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.productService.getAll().pipe(takeUntil(this.takeUntil$)).subscribe();
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -136,6 +144,7 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+        takeUntil(this.takeUntil$),
       )
       .subscribe();
   }
@@ -147,7 +156,13 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.addProduct(newProduct)),
+        takeUntil(this.takeUntil$),
       )
       .subscribe();
+  }
+
+  ngOnDestroy() {
+    this.takeUntil$.next();
+    this.takeUntil$.complete();
   }
 }

@@ -1,10 +1,11 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { Product } from '../product-http.service';
 
 @Component({
   selector: 'y42-product-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './product-detail.component.html',
   styles: [
     `
@@ -54,6 +55,7 @@ export class ProductDetailComponent implements OnInit {
     }),
     stock: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
     price: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
+    rating: new FormControl<number>(5, { validators: [Validators.required, Validators.max(5)], nonNullable: true }),
   });
 
   ngOnInit(): void {
