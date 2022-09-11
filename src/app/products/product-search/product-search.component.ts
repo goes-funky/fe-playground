@@ -11,7 +11,7 @@ import { LAST_FETCH_SECONDS } from '../tokens/last-fetch-seconds';
 })
 export class ProductSearchComponent implements OnInit, OnDestroy {
   readonly takeUntil$: Subject<void> = new Subject();
-  searchInputFormControl = new FormControl<string>('', { validators: [Validators.required], nonNullable: true });
+  searchInputFormControl = new FormControl<string>('', {nonNullable: true });
   constructor(
     private productService: ProductService,
     @Inject(LAST_FETCH_SECONDS) public lastFetchSeconds$: Observable<number>,
