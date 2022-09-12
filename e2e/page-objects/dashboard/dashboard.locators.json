@@ -1,0 +1,44 @@
+{
+    "FirstRow":{
+        "xpath": "//div[@ref='eContainer']/div[@row-index='0']"
+    },
+    "Row":{
+        "xpath": "//div[@ref='eContainer']/div[@row-index='"
+    },
+    "ProductCardTitle":{
+        "xpath": "//mat-card-title[text()='Shipping Information']"
+    },
+    "FirstProductPrice":{
+        "xpath": "//div[@row-index='0']/div[@col-id='price']"
+    },
+    "FirstProductStock":{
+        "xpath": "//div[@row-index='0']/div[@col-id='stock']"
+    },
+    "StockSort":{
+        "css": "[role='columnheader'][col-id='stock']"
+    },
+
+    "ShippingInfo" :{
+
+        "TitleInput": {
+            "css": "[formcontrolname='title']"
+        },
+        "DescriptionInput": {
+            "css": "[formcontrolname='description']"
+        },
+        "PriceInput": {
+            "css": "[formcontrolname='price']"
+        },
+        "StockInput": {
+            "css": "[formcontrolname='stock']"
+        },
+        "PriceInputError": {
+            "css": "[id='mat-error-2']"
+        },
+        "StockInputError": {
+            "css": "[id='mat-error-3']"
+        }
+
+    }
+   
+}

@@ -1,0 +1,13 @@
+
+{
+    "Email":{
+        "css": "[data-placeholder='email']"
+    },
+    "Password":{
+        "css": "[data-placeholder='Password']"
+    },
+    "SubmitBtn":{
+        "css": "[type='submit']"
+    }
+    
+}
