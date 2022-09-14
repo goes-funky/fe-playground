@@ -11,7 +11,7 @@ import { ProductService } from '../product-services/product.service';
   selector: 'y42-product-list',
   template: `
     <!-- Product-list-header-->
-    <h5>Last updated: {{ (timeSinceLastCall | async) | dateTimeFormat: 'mm:ss' }}</h5>
+    <h4>Last updated: {{ (timeSinceLastCall | async) | dateTimeFormat: 'mm:ss' }}</h4>
     <y42-product-header (addProductEvent)="onAddProduct()" [searchControl]="searchCtrl"> </y42-product-header>
 
     <!-- Product-list-body-->
@@ -135,13 +135,8 @@ export class ProductListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    interval(60000 * 2)
-      .pipe(
-        delay(5000),
-        takeUntil(this.unsubscription$),
-        tap(() => this.getAllProducts()),
-      )
-      .subscribe();
+    // Refresh the data every 2 mins
+    this.fetchProductsInterval(60000 * 2)
   }
 
   ngOnDestroy(): void {
@@ -180,6 +175,16 @@ export class ProductListComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+      )
+      .subscribe();
+  }
+
+  private fetchProductsInterval(time: number) {
+    interval(time)
+      .pipe(
+        delay(5000),
+        takeUntil(this.unsubscription$),
+        tap(() => this.getAllProducts()),
       )
       .subscribe();
   }
