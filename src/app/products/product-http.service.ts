@@ -19,7 +19,7 @@ export interface Product {
   providedIn: 'root',
 })
 export class ProductHttpService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // https://dummyjson.com/docs/products
 
@@ -30,9 +30,22 @@ export class ProductHttpService {
       skip: number;
       limit: number;
     }>('/api/products');
-  }
+  };
 
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
-  }
+  };
+
+  add(product: Product) {
+    return this.http.post<Product>(`/api/products/add`, product);
+  };
+
+  search(query: string) {
+    return this.http.get<{
+      products: Product[];
+      total: number;
+      skip: number;
+      limit: number;
+    }>(`/api/products/search?q=${query}`);
+  };
 }
