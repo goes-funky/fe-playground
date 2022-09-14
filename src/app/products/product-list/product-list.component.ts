@@ -136,7 +136,7 @@ export class ProductListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     // Refresh the data every 2 mins
-    this.fetchProductsInterval(60000 * 2)
+    this.fetchProductsInterval(60000 * 1);
   }
 
   ngOnDestroy(): void {
