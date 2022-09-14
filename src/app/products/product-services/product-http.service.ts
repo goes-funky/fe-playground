@@ -13,13 +13,13 @@ export interface Product {
   category: string;
   thumbnail: string;
   images: string[];
-}
+};
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProductHttpService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { };
 
   // https://dummyjson.com/docs/products
 
@@ -48,4 +48,4 @@ export class ProductHttpService {
       limit: number;
     }>(`/api/products/search?q=${query}`);
   };
-}
+};

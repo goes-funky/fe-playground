@@ -11,10 +11,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../../shared/shared.module';
 
 // components
-import * as fromComponents from '../components/';
-import { SharedModule } from '../../shared/shared.module';
+import * as fromComponents from '../product-child-components';
 
 
 // routes
