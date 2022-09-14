@@ -11,13 +11,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AgGridModule } from 'ag-grid-angular';
-import { ProductHeaderComponent } from '../components';
 import { ProductDetailModule } from '../product-detail/product-detail.module';
 import { ProductListComponent } from './product-list.component';
 import { ROUTES } from './product-list.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ProductService } from '../product-services/product.service';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ProductHeaderComponent } from '../product-child-components';
 
 describe(ProductListComponent.name, () => {
     let component: ProductListComponent;
