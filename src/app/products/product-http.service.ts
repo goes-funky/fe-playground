@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Product } from './product.model';
 
-interface ProductsResponse {
+export interface ProductsResponse {
   products: Product[];
   total: number;
   skip: number;

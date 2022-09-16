@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, iif, Observable, switchMap, tap, timer } from 'rxjs';
-import { ProductHttpService } from './product-http.service';
+import { BehaviorSubject, finalize, iif, Observable, of, switchMap, tap, timer } from 'rxjs';
+import { ProductHttpService, ProductsResponse } from './product-http.service';
 import { Product, productInitialState } from './product.model';
 
 @Injectable({ providedIn: 'root' })
@@ -91,9 +91,10 @@ export class ProductService {
     );
   }
 
-  search(query: string | null) {
+  search(query: string | null): Observable<null | ProductsResponse> {
     if (!query) {
       this.searchResults$$.next(null);
+      return of(null);
     }
 
     this.loading$$.next(true);

@@ -8,11 +8,11 @@ export class TimerService {
   private readonly timer$$ = new BehaviorSubject<number>(0);
   readonly timer$: Observable<number> = this.timer$$;
 
-  start(onRestart: () => void, minutes = 60) {
+  start(onRestart: () => void, seconds = 60) {
     return timer(0, 1000).pipe(
       scan(totalTime => ++totalTime, 0),
       tap((tick) => this.timer$$.next(tick)),
-      takeWhile(x => x < minutes),
+      takeWhile(x => x < seconds),
       finalize(onRestart),
       repeat(),
     );

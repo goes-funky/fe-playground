@@ -6,7 +6,7 @@ import {
 } from '@angular/common/http/testing';
 import { ProductService } from '../product.service';
 import { productInitialState } from '../product.model';
-import { scan, switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 
 describe('ProductService', () => {
   let httpTestingController: HttpTestingController;
@@ -65,5 +65,38 @@ describe('ProductService', () => {
     );
     expect(req.request.method).toEqual('POST');
     req.flush(exampleProduct);
+  });
+
+  it('should search a product', (done) => {
+    const exampleProduct = { ...productInitialState, title: 'title' };
+
+    service.search('title')
+      .pipe(switchMap(() => service.searchResults$))
+      .subscribe((searchResults) => {
+        expect(searchResults?.length).toBe(1);
+        expect(searchResults).toEqual([exampleProduct]);
+        done();
+      });
+
+    const req = httpTestingController.expectOne(
+      '/api/products/search?q=title',
+    );
+    expect(req.request.method).toEqual('GET');
+    req.flush({
+      products: [exampleProduct],
+    });
+  });
+
+  it('should reset search results', (done) => {
+    service.search('')
+      .pipe(switchMap(() => service.searchResults$))
+      .subscribe((searchResults) => {
+        expect(searchResults).toEqual(null);
+        done();
+      });
+
+    httpTestingController.expectNone(
+      '/api/products/search?q=title',
+    );
   });
 });
