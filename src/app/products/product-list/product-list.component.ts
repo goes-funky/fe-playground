@@ -6,6 +6,7 @@ import { ProductDetailComponent } from '../product-detail/product-detail.compone
 import { ProductService } from '../product.service';
 import { Product } from '../product.model';
 import { FormControl } from '@angular/forms';
+import { TimerService } from '../timer.service';
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -26,6 +27,9 @@ const SEARCH_DEBOUNCE_MS = 300;
         <mat-form-field class='full-width'>
           <input matInput placeholder='Search' [formControl]='filter' />
         </mat-form-field>
+      </div>
+      <div class='col'>
+        <span>Fetched {{timer$ | async}} seconds ago</span>
       </div>
     </div>
 
@@ -80,11 +84,14 @@ export class ProductListComponent implements OnInit, OnDestroy {
   public filter = new FormControl('');
   public filterSubscriber: Subscription | undefined;
 
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
+  constructor(private productService: ProductService,
+              private bottomSheet: MatBottomSheet,
+              private timerService: TimerService) {
   }
 
   readonly products$ = this.productService.filteredProducts$;
   readonly loading$ = this.productService.loading$;
+  readonly timer$ = this.timerService.timer$;
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -149,12 +156,22 @@ export class ProductListComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.fetchProducts();
     this.dynamicProductSearch();
+
+    this.timerService
+      .start(() => {
+        this.fetchProducts();
+      })
+      .subscribe();
   }
 
   ngOnDestroy() {
     this.filterSubscriber?.unsubscribe();
+  }
+
+  fetchProducts() {
+    this.productService.getAll().subscribe();
   }
 
   dynamicProductSearch(): void {
