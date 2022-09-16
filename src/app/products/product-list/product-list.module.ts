@@ -9,39 +9,29 @@ import { ProductDetailModule } from '../product-detail/product-detail.module';
 import { ProductListComponent } from './product-list.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule } from '@angular/forms';
-import { SharedModule } from '../../shared/shared.module';
-
-// components
-import * as fromComponents from '../product-child-components';
-
-
-// routes
-export const ROUTES: Routes = [
-  {
-    path: '',
-    component: ProductListComponent,
-  },
-];
+import { DateTimePipeModule } from 'src/app/utils/date-time-pipe/date-time-pipe.module';
+import { ProductHeaderModule } from '../product-header/product-header.module';
 
 @NgModule({
-  declarations: [ProductListComponent, ...fromComponents.components],
-  exports: [ProductListComponent, ...fromComponents.components],
+  declarations: [ProductListComponent],
+  exports: [ProductListComponent],
   imports: [
     CommonModule,
     AgGridModule,
-    ReactiveFormsModule,
-    MatIconModule,
     MatButtonModule,
     MatProgressSpinnerModule,
     MatBottomSheetModule,
     MatButtonModule,
     MatCardModule,
-    MatInputModule,
     ProductDetailModule,
-    SharedModule,
-    RouterModule.forChild(ROUTES),
+    DateTimePipeModule,
+    ProductHeaderModule,
+    RouterModule.forChild([
+      {
+        path: '',
+        component: ProductListComponent,
+      },
+    ]),
   ],
 })
 export class ProductListModule { }

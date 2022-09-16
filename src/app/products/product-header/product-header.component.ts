@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 @Component({
@@ -12,7 +12,7 @@ import { FormControl } from '@angular/forms';
               <input matInput autocomplete="off" placeholder="Enter search query" type="text" (focus)="searchControl.setValue('');" [formControl]="searchControl" />
               <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
-            <button (click)="addProductEvent.emit()" color="primary" id="add-btn" type="button" mat-mini-fab>
+            <button (click)="addProductEvent.emit();" color="primary" id="add-btn" type="button" mat-mini-fab>
               <mat-icon>add</mat-icon>
             </button>
           </div>
@@ -28,12 +28,10 @@ import { FormControl } from '@angular/forms';
     `,
   ],
 })
-export class ProductHeaderComponent implements OnInit {
+export class ProductHeaderComponent {
   @Input() searchControl!: FormControl;
   @Input() time: any;
   @Output() addProductEvent = new EventEmitter();
 
   constructor() { }
-
-  ngOnInit(): void { }
 }

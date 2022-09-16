@@ -1,24 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AgGridModule } from 'ag-grid-angular';
-import { ProductDetailModule } from '../product-detail/product-detail.module';
 import { ProductListComponent } from './product-list.component';
-import { ROUTES } from './product-list.module';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ProductService } from '../product-services/product.service';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ProductHeaderComponent } from '../product-child-components';
-import { SharedModule } from '../../shared/shared.module';
 
 describe(ProductListComponent.name, () => {
     let component: ProductListComponent;
@@ -29,26 +13,9 @@ describe(ProductListComponent.name, () => {
             imports: [
                 CommonModule,
                 BrowserAnimationsModule,
-                FormsModule,
-                ReactiveFormsModule,
                 NoopAnimationsModule,
-                AgGridModule,
-                ReactiveFormsModule,
-                MatIconModule,
-                SharedModule,
-                MatButtonModule,
-                MatProgressSpinnerModule,
-                MatBottomSheetModule,
-                MatButtonModule,
-                MatCardModule,
-                MatInputModule,
-                ProductDetailModule,
-                RouterTestingModule,
-                HttpClientModule,
-                HttpClientTestingModule,
-                RouterModule.forChild(ROUTES),
             ],
-            declarations: [ProductListComponent, ProductHeaderComponent],
+            declarations: [ProductListComponent],
             providers: [ProductService],
         }).compileComponents();
     });
