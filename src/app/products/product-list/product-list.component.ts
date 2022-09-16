@@ -3,19 +3,28 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
 import { filter, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
+import { Product } from '../product.model';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
+  template: `
+    <button
+      mat-raised-button
+      type='button'
+      aria-label='Add product'
+      (click)='addProduct()'>
+      Add Product
+    </button>
+
+    <ag-grid-angular
+      class='ag-theme-alpine'
+      [rowData]='products$ | async'
+      [gridOptions]='gridOptions'
+      [columnDefs]='columnDefs'
+      (rowDoubleClicked)='openProduct($event)'
     ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
+    <mat-spinner *ngIf='loading$ | async' [diameter]='36' [mode]="'indeterminate'"></mat-spinner> `,
   styles: [
     `
       :host {
@@ -36,11 +45,16 @@ import { ProductService } from '../product.service';
         top: 0.5rem;
         right: 0.5rem;
       }
+
+      .mat-raised-button {
+        margin-bottom: 1rem;
+      }
     `,
   ],
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
+  }
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
@@ -129,6 +143,17 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+      )
+      .subscribe();
+  }
+
+  addProduct(): void {
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent)
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
       )
       .subscribe();
   }

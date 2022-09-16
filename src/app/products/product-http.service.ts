@@ -1,19 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
-export interface Product {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  discountPercentage: number;
-  rating: number;
-  stock: number;
-  brand: string;
-  category: string;
-  thumbnail: string;
-  images: string[];
-}
+import { Product } from './product.model';
 
 @Injectable({
   providedIn: 'root',
@@ -34,5 +21,11 @@ export class ProductHttpService {
 
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
+  }
+
+  add(data: Partial<Product>) {
+    return this.http.post<Product>('/api/products/add', {
+      data
+    });
   }
 }

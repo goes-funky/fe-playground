@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
-import { Product, ProductHttpService } from './product-http.service';
+import { ProductHttpService } from './product-http.service';
+import { Product, productInitialState } from './product.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  constructor(private productHttp: ProductHttpService) {}
+  constructor(private productHttp: ProductHttpService) {
+  }
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
@@ -54,6 +56,15 @@ export class ProductService {
     );
   }
 
+  addProduct(newProduct: Partial<Product>) {
+    this.loading$$.next(true);
+
+    return this.productHttp.add(newProduct).pipe(
+      tap((response) => this._addProduct({...productInitialState, ...newProduct, ...response})),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
   updatePrice(id: number, newPrice: number) {
     this.loading$$.next(true);
 
@@ -74,5 +85,10 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
   }
 }
