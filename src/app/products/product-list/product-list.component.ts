@@ -190,7 +190,7 @@ export class ProductListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /* Search functionality to filter the product list using the API */
-  private searchProducts() {
+  searchProducts() {
     this.searchCtrl.valueChanges
       .pipe(
         distinctUntilChanged(),
