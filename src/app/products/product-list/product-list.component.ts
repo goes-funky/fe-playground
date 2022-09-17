@@ -83,6 +83,7 @@ const SEARCH_DEBOUNCE_MS = 300;
 export class ProductListComponent implements OnInit, OnDestroy {
   public filter = new FormControl('');
   public filterSubscriber: Subscription | undefined;
+  public timerSubscriber: Subscription | undefined;
 
   constructor(private productService: ProductService,
               private bottomSheet: MatBottomSheet,
@@ -159,7 +160,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     this.fetchProducts();
     this.dynamicProductSearch();
 
-    this.timerService
+    this.timerSubscriber = this.timerService
       .start(() => {
         this.fetchProducts();
       })
@@ -168,6 +169,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.filterSubscriber?.unsubscribe();
+    this.timerSubscriber?.unsubscribe();
   }
 
   fetchProducts() {
