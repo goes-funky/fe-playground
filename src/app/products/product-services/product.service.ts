@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, tap, timer, switchMap, catchError, throwError, Subject } from 'rxjs';
 import { Product, ProductHttpService } from './product-http.service';
+import moment from 'moment';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  constructor(private productHttp: ProductHttpService) {}
+  constructor(private productHttp: ProductHttpService) { }
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
+  private readonly timer$$ = new Subject<moment.Moment>();
 
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
+  readonly timer$: Observable<moment.Moment> = this.timer$$.asObservable();
 
   getAll() {
     this.loading$$.next(true);
@@ -20,9 +23,44 @@ export class ProductService {
     );
   }
 
+  /*  Add a new product to the list*/
+  addProduct(product: Product) {
+    this.loading$$.next(true);
+    return timer(750).pipe(
+      switchMap(() => this.productHttp.add(product)),
+      tap((response) => this._addProduct(response)),
+      catchError((err) => {
+        console.log('Handling error and rethrowing it...', err);
+        return throwError(() => err);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  /*  Search Products by query parameters */
+  searchProducts(products: string) {
+    this.loading$$.next(true);
+    return this.productHttp.search(products).pipe(
+      tap((response) => {
+        this.products$$.next(response.products);
+      }),
+      catchError((err) => {
+        console.log('Handling error and rethrowing it...', err);
+        return throwError(() => err);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  /*  Updates the timer with the after each call to get the product*/
+  resetTimer() {
+    const currentTime = new Date();
+    const fetchTime = moment(currentTime);
+    this.timer$$.next(moment(fetchTime));
+  }
+
   updateProduct(id: number, newProduct: Partial<Product>) {
     this.loading$$.next(true);
-
     return timer(750).pipe(
       tap(() => {
         const product = this.products$$.getValue().find((product) => product.id === id);
@@ -74,5 +112,12 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  /* Helper functions to add new products */
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    products.push(...[product]);
+    this.products$$.next([...products]);
   }
 }

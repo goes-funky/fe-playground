@@ -1,21 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { debounceTime, delay, distinctUntilChanged, filter, interval, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
-import { ProductService } from '../product.service';
+import { FormControl } from '@angular/forms';
+import { Product } from '../product-services/product-http.service';
+import { ProductService } from '../product-services/product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+    <!-- Product-list-header-->
+    <h4>Last updated: {{ (timeSinceLastCall | async) | dateTimeFormat: 'mm:ss' }}</h4>
+    <y42-product-header (addProductEvent)="onAddProduct()" [searchControl]="searchCtrl"> </y42-product-header>
+
+    <!-- Product-list-body-->
+    <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
       [columnDefs]="columnDefs"
       (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
+    >
+    </ag-grid-angular>
+
+    <!-- Loading spinner-->
+    <ng-container *ngIf="loading$ | async">
+      <mat-spinner [diameter]="36" [mode]="'indeterminate'"></mat-spinner>
+    </ng-container>
+  `,
   styles: [
     `
       :host {
@@ -33,18 +46,22 @@ import { ProductService } from '../product.service';
 
       mat-spinner {
         position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
+        z-index: 999;
+        height: 2em;
+        width: 2em;
+        overflow: show;
+        margin: auto;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
       }
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
-
+export class ProductListComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
-
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
     animateRows: true,
@@ -106,9 +123,38 @@ export class ProductListComponent implements OnInit {
       valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
     },
   ];
+  readonly searchCtrl = new FormControl();
+  readonly timeSinceLastCall = this.productService.timer$;
+  private unsubscription$ = new Subject<void>();
+
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) { }
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.getAllProducts();
+    this.searchProducts();
+  }
+
+  ngAfterViewInit(): void {
+    // Refresh the data every 2 mins
+    this.fetchProductsInterval(60000 * 1);
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscription$.next();
+    this.unsubscription$.complete();
+  }
+
+  /* Feature to Add product using the exisit product details component */
+  onAddProduct() {
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent)
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
+        take(1),
+      )
+      .subscribe();
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -131,5 +177,36 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
       .subscribe();
+  }
+
+  private fetchProductsInterval(time: number) {
+    interval(time)
+      .pipe(
+        delay(5000),
+        takeUntil(this.unsubscription$),
+        tap(() => this.getAllProducts()),
+      )
+      .subscribe();
+  }
+
+  /* Search functionality to filter the product list using the API */
+  searchProducts() {
+    this.searchCtrl.valueChanges
+      .pipe(
+        distinctUntilChanged(),
+        debounceTime(400),
+        takeUntil(this.unsubscription$),
+        switchMap((entry: string) => {
+          // Listen to value changes on the search input field
+          return this.productService.searchProducts(entry);
+        }),
+      )
+      .subscribe();
+  }
+
+  private getAllProducts() {
+    this.productService.getAll().pipe(take(1), tap(() => {
+      this.productService.resetTimer();
+    })).subscribe();
   }
 }

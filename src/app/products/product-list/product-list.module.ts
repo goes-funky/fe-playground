@@ -6,6 +6,8 @@ import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
 import { ProductDetailModule } from '../product-detail/product-detail.module';
 import { ProductListComponent } from './product-list.component';
+import { DateTimePipeModule } from '../../utils/date-time-pipe/date-time-pipe.module';
+import { ProductHeaderModule } from '../product-header/product-header.module';
 
 @NgModule({
   declarations: [ProductListComponent],
@@ -16,6 +18,8 @@ import { ProductListComponent } from './product-list.component';
     MatProgressSpinnerModule,
     MatBottomSheetModule,
     ProductDetailModule,
+    DateTimePipeModule,
+    ProductHeaderModule,
     RouterModule.forChild([
       {
         path: '',
@@ -24,4 +28,4 @@ import { ProductListComponent } from './product-list.component';
     ]),
   ],
 })
-export class ProductListModule {}
+export class ProductListModule { }
