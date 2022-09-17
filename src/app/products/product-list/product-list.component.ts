@@ -1,21 +1,46 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { debounceTime, filter, Subscription, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
+import { Product } from '../product.model';
+import { FormControl } from '@angular/forms';
+import { TimerService } from '../timer.service';
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
+  template: `
+    <div class='row'>
+      <div class='col'>
+        <button
+          mat-raised-button
+          type='button'
+          aria-label='Add product'
+          (click)='addProduct()'>
+          Add Product
+        </button>
+      </div>
+      <div class='col'>
+        <mat-form-field class='full-width'>
+          <input matInput placeholder='Search' [formControl]='filter' />
+        </mat-form-field>
+      </div>
+      <div class='col'>
+        <span>Fetched {{timer$ | async}} seconds ago</span>
+      </div>
+    </div>
+
+    <ag-grid-angular
+      class='ag-theme-alpine'
+      [rowData]='products$ | async'
+      [gridOptions]='gridOptions'
+      [columnDefs]='columnDefs'
+      (rowDoubleClicked)='openProduct($event)'
     ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
+    <mat-spinner *ngIf='loading$ | async' [diameter]='36' [mode]="'indeterminate'"></mat-spinner> `,
   styles: [
     `
       :host {
@@ -36,14 +61,38 @@ import { ProductService } from '../product.service';
         top: 0.5rem;
         right: 0.5rem;
       }
+
+      .mat-raised-button {
+        margin-bottom: 1rem;
+      }
+
+      .row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .col {
+        flex: 1;
+        margin-right: 20px;
+      }
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+export class ProductListComponent implements OnInit, OnDestroy {
+  public filter = new FormControl('');
+  public filterSubscriber: Subscription | undefined;
+  public timerSubscriber: Subscription | undefined;
 
-  readonly products$ = this.productService.products$;
+  constructor(private productService: ProductService,
+              private bottomSheet: MatBottomSheet,
+              private timerService: TimerService) {
+  }
+
+  readonly products$ = this.productService.filteredProducts$;
   readonly loading$ = this.productService.loading$;
+  readonly timer$ = this.timerService.timer$;
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -108,7 +157,32 @@ export class ProductListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.fetchProducts();
+    this.dynamicProductSearch();
+
+    this.timerSubscriber = this.timerService
+      .start(() => {
+        this.fetchProducts();
+      })
+      .subscribe();
+  }
+
+  ngOnDestroy() {
+    this.filterSubscriber?.unsubscribe();
+    this.timerSubscriber?.unsubscribe();
+  }
+
+  fetchProducts() {
     this.productService.getAll().subscribe();
+  }
+
+  dynamicProductSearch(): void {
+    this.filterSubscriber = this.filter.valueChanges
+      .pipe(
+        debounceTime(SEARCH_DEBOUNCE_MS),
+        switchMap((query) => this.productService.search(query)),
+      )
+      .subscribe();
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -129,6 +203,17 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+      )
+      .subscribe();
+  }
+
+  addProduct(): void {
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent)
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
       )
       .subscribe();
   }

@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
-import { Product } from '../product-http.service';
+import { Product } from '../product.model';
 
 @Component({
   selector: 'y42-product-detail',
@@ -39,10 +39,13 @@ import { Product } from '../product-http.service';
   ],
 })
 export class ProductDetailComponent implements OnInit {
+  public showExtendedForm = true;
+
   constructor(
     private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
     @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
-  ) {}
+  ) {
+  }
 
   readonly form = new FormGroup({
     id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
@@ -53,10 +56,15 @@ export class ProductDetailComponent implements OnInit {
     }),
     stock: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
     price: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
+    rating: new FormControl(0, { validators: [Validators.required, Validators.min(0), Validators.max(5)], nonNullable: true }),
+    brand: new FormControl('', { validators: [Validators.required, Validators.minLength(2)], nonNullable: true }),
   });
 
   ngOnInit(): void {
-    this.form.patchValue(this.product);
+    if (this.product) {
+      this.showExtendedForm = false;
+      this.form.patchValue(this.product);
+    }
   }
 
   cancel() {
