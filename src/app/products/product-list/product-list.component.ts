@@ -205,6 +205,8 @@ export class ProductListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getAllProducts() {
-    this.productService.getAll().pipe(take(1)).subscribe();
+    this.productService.getAll().pipe(take(1), tap(() => {
+      this.productService.resetTimer();
+    })).subscribe();
   }
 }

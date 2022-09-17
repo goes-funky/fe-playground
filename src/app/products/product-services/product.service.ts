@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, finalize, Observable, tap, timer, switchMap, catchError, throwError, Subject } from 'rxjs';
 import { Product, ProductHttpService } from './product-http.service';
-import moment from "moment";
+import moment from 'moment';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -19,10 +19,7 @@ export class ProductService {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
       tap((response) => this.products$$.next(response.products)),
-      finalize(() => {
-        this.loading$$.next(false);
-        this._updateTimer(new Date());
-      }),
+      finalize(() => this.loading$$.next(false)),
     );
   }
 
@@ -53,6 +50,13 @@ export class ProductService {
       }),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+
+  /*  Updates the timer with the after each call to get the product*/
+  resetTimer() {
+    const currentTime = new Date();
+    const fetchTime = moment(currentTime);
+    this.timer$$.next(moment(fetchTime));
   }
 
   updateProduct(id: number, newProduct: Partial<Product>) {
@@ -108,11 +112,6 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
-  }
-
-  /*  Updates the timer with the after each call to get the product*/
-  private _updateTimer(date: moment.MomentInput) {
-    this.timer$$.next(moment(date));
   }
 
   /* Helper functions to add new products */
