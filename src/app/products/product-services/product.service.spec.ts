@@ -113,7 +113,7 @@ describe('ProductService', () => {
 
     it('should add new product to the existing list of products', fakeAsync(() => {
         service.getAll();
-        tick(500)
+        tick(100)
         const samplePayload: Partial<Product> = {
             title: 'Windows Phone',
             description:
@@ -136,7 +136,7 @@ describe('ProductService', () => {
         tick(1000);
         service.products$.subscribe((response) => {
             const newProduct = response.filter(product => product.title === 'Windows Phone');
-            expect(newProduct[0].title).toEqual(samplePayload.title);
+            expect(newProduct[0]).toEqual(samplePayload);
         });
         flush();
     }));
@@ -148,7 +148,7 @@ describe('ProductService', () => {
         jest.spyOn(service, 'searchProducts');
         service.searchProducts(searchTerm);
         expect(service.searchProducts).toBeCalledWith(searchTerm);
-        tick(1000);
+        tick(200);
         service.products$.subscribe((response) => {
             expect(response).toBeTruthy();
             expect(response.length).toBeGreaterThan(0);
