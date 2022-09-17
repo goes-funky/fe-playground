@@ -67,10 +67,6 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
-  log(d: any) {
-    console.log(d);
-  }
-
   cancel() {
     this.bottomSheetRef.dismiss();
   }

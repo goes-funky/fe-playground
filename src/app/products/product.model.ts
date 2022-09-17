@@ -23,4 +23,4 @@ export const productInitialState: Partial<Product> = {
   category: '',
   thumbnail: '',
   images: [],
-}
+};
