@@ -5,7 +5,6 @@ import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform
 import { HttpClientModule } from '@angular/common/http';
 import { ProductListModule } from './product-list.module';
 import { of, Observable } from 'rxjs';
-import { Product } from '../product-services/product-http.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 let mockData = {

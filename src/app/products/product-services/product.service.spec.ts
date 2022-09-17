@@ -1,7 +1,7 @@
-import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
-import { Product, ProductHttpService } from './product-http.service';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Product } from './product-http.service';
 import { ProductService } from './product.service';
-import { fakeAsync, flush, getTestBed, TestBed, tick } from '@angular/core/testing';
+import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
