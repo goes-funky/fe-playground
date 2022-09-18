@@ -20,6 +20,29 @@ export class ProductService {
     );
   }
 
+  searchByKey(key: string | null) {
+    this.loading$$.next(true);
+    if(key === '') return this.getAll()
+    return this.productHttp.searchByKey(key).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  addNewProduct(newProduct: Product) {
+    this.loading$$.next(true);
+
+    return this.productHttp.addProduct(newProduct).pipe(
+      tap((result) => {
+        if (!newProduct) {
+          return;
+        }
+        this._addProduct({ ...newProduct, id: (result as { id: number }).id, brand: 'Apple', rating: 4.6 });
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
   updateProduct(id: number, newProduct: Partial<Product>) {
     this.loading$$.next(true);
 
@@ -74,5 +97,10 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
   }
 }
