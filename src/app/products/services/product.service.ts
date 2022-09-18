@@ -22,7 +22,7 @@ export class ProductService {
 
   searchByKey(key: string | null) {
     this.loading$$.next(true);
-    if(!key) this.getAll()
+    if(key === '') return this.getAll()
     return this.productHttp.searchByKey(key).pipe(
       tap((response) => this.products$$.next(response.products)),
       finalize(() => this.loading$$.next(false)),
