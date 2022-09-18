@@ -22,24 +22,30 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Price" formControlName="price" />
+            <input type="number" min="0" matInput placeholder="Price" formControlName="price" />
             <mat-error *ngIf="form.controls['price'].hasError('required')">
               Price is <strong>required</strong>
+            </mat-error>
+            <mat-error *ngIf="form.controls['price'].hasError('min')">
+              Price cannot be less than <strong>0</strong>
             </mat-error>
           </mat-form-field>
         </div>
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Stock" formControlName="stock" />
+            <input type="number" min="0" matInput placeholder="Stock" formControlName="stock" />
             <mat-error *ngIf="form.controls['stock'].hasError('required')">
               Stock is <strong>required</strong>
+            </mat-error>
+            <mat-error *ngIf="form.controls['stock'].hasError('min')">
+              Stock value cannot be less than <strong>0</strong>
             </mat-error>
           </mat-form-field>
         </div>
       </div>
     </mat-card-content>
     <mat-card-actions [align]="'end'">
-      <button mat-raised-button type="button" [disabled]="form.invalid" (click)="cancel()">Cancel</button>
+      <button mat-raised-button type="button" (click)="cancel()">Cancel</button>
       <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || form.pristine">Submit</button>
     </mat-card-actions>
   </mat-card>

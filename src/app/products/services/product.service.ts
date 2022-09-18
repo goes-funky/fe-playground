@@ -1,6 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
-import { Product, ProductHttpService } from './product-http.service';
+import { BehaviorSubject, catchError, finalize, Observable, tap, throwError, timer } from 'rxjs';
+import { Product, ProductSearchResult } from '../products.component.model';
+import { ProductHttpService } from './product-http.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -71,8 +73,37 @@ export class ProductService {
     );
   }
 
+  addProduct(product: Product) {
+    this.loading$$.next(true);
+    return this.productHttp.add(product)
+    .pipe(
+      tap((newProduct: Product) =>  this._addProduct({...product, ...newProduct})),
+      catchError((err: HttpErrorResponse) => {
+        throw new Error(err.message);
+      }),
+      finalize(() =>  this.loading$$.next(false))
+    )
+  }
+
+  searchProduct(searchText: string) {
+    this.loading$$.next(true);
+    return this.productHttp.search(searchText).
+      pipe(
+        tap((response: ProductSearchResult) => this.products$$.next(response.products)),
+        catchError((err: HttpErrorResponse) => {
+          throw new Error(err.message);
+        }),
+        finalize(() =>  this.loading$$.next(false))
+      )
+  }
+
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
   }
 }

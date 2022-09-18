@@ -1,49 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, Subject, switchMap, take, takeUntil, takeWhile } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
-import { ProductService } from '../product.service';
+import { Product } from '../products.component.model';
+import { ProductFetchTimerService } from '../services/product-fetch-timer.service';
+import { ProductService } from '../services/product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-
-      ag-grid-angular {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      mat-spinner {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-    `,
-  ],
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.scss'],
 })
-export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+export class ProductListComponent implements OnInit, OnDestroy {
+  constructor(
+    private productService: ProductService,
+    private bottomSheet: MatBottomSheet,
+    private productFetchTimerServie: ProductFetchTimerService,
+  ) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  readonly endSubscription$ = new Subject();
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -103,12 +81,22 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) =>  params ? `${(params.value as number).toFixed(2)}/5`: '',
     },
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.getProducts();
+    this.productFetchTimerServie
+      .init(() => this.getProducts())
+      .pipe(takeUntil(this.endSubscription$))
+      .subscribe();
+  }
+
+  getProducts() {
+    this.productService.getAll()
+    .pipe(takeUntil(this.endSubscription$))
+    .subscribe();
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -129,7 +117,12 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+        take(1),
       )
       .subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.endSubscription$.complete();
   }
 }

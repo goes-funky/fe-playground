@@ -1,0 +1,8 @@
+<ag-grid-angular
+  class="ag-theme-alpine"
+  [rowData]="products$ | async"
+  [gridOptions]="gridOptions"
+  [columnDefs]="columnDefs"
+  (rowDoubleClicked)="openProduct($event)"
+></ag-grid-angular>
+<mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner>

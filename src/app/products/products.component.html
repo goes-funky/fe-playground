@@ -1,0 +1,7 @@
+<div class="products-header">
+  <y42-product-search></y42-product-search>
+  <button mat-raised-button color="primary" (click)="addProduct()">Add Product</button>
+</div>
+<h2>Products</h2>
+<span>Fetched {{timer$ | async}} <i>seconds ago</i></span>
+<router-outlet></router-outlet>

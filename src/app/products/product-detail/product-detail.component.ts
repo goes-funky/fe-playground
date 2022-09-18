@@ -1,42 +1,12 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
-import { Product } from '../product-http.service';
+import { Product } from '../products.component.model';
 
 @Component({
   selector: 'y42-product-detail',
   templateUrl: './product-detail.component.html',
-  styles: [
-    `
-      .full-width {
-        width: 100%;
-      }
-
-      .shipping-card {
-        min-width: 120px;
-        margin: 20px auto;
-      }
-
-      .mat-radio-button {
-        display: block;
-        margin: 5px 0;
-      }
-
-      .row {
-        display: flex;
-        flex-direction: row;
-      }
-
-      .col {
-        flex: 1;
-        margin-right: 20px;
-      }
-
-      .col:last-child {
-        margin-right: 0;
-      }
-    `,
-  ],
+  styleUrls: ['./product-details.component.scss']
 })
 export class ProductDetailComponent implements OnInit {
   constructor(
@@ -46,9 +16,9 @@ export class ProductDetailComponent implements OnInit {
 
   readonly form = new FormGroup({
     id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
-    title: new FormControl('', { validators: [Validators.required, Validators.minLength(2)], nonNullable: true }),
+    title: new FormControl('', { validators: [Validators.required, Validators.minLength(2), this.noWhitespaceValidator], nonNullable: true }),
     description: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(2), Validators.maxLength(255)],
+      validators: [Validators.required, Validators.minLength(2), Validators.maxLength(255), this.noWhitespaceValidator],
       nonNullable: true,
     }),
     stock: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
@@ -66,4 +36,10 @@ export class ProductDetailComponent implements OnInit {
   submit() {
     this.bottomSheetRef.dismiss(this.form.value);
   }
+
+  private noWhitespaceValidator(control: FormControl) {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    const isValid = !isWhitespace;
+    return isValid ? null : { 'whitespace': true };
+}
 }
