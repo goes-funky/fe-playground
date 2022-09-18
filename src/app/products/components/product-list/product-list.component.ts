@@ -3,8 +3,8 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
 import { filter, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
-import { ProductService } from '../product.service';
+import { Product } from '../../services/product-http.service';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'y42-product-list',

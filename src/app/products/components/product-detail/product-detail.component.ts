@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
-import { Product } from '../product-http.service';
+import { Product } from '../../services/product-http.service';
 
 @Component({
   selector: 'y42-product-detail',
