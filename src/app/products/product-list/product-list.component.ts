@@ -8,7 +8,10 @@ import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+  <input matInput type="search" id="search" placeholder="Search Products" (keyup)="onProductSearchChanged()" [(ngModel)]="searchProductKey">
+  <button mat-raised-button color='green' (click)="onAddProduct()">Add Product</button>
+<ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
@@ -44,6 +47,8 @@ export class ProductListComponent implements OnInit {
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+
+  searchProductKey: string = '';
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -112,7 +117,8 @@ export class ProductListComponent implements OnInit {
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
-    if (!params.data) {
+    if (!params.data) {;
+
       return;
     }
 
@@ -131,5 +137,26 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
       .subscribe();
+  }
+
+  /**
+   * Adding New Product
+   */
+  onAddProduct(): void {
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent)
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
+      )
+      .subscribe();
+  }
+
+  /**
+   * Searching Products
+   */
+  onProductSearchChanged(): void {   
+    this.productService.getProducts(this.searchProductKey);
   }
 }
