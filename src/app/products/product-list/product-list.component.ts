@@ -81,7 +81,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) =>  params ? `${(params.value as number).toFixed(2)}/5`: '',
+      valueFormatter: (params) =>  (params && params.value) ? `${(params.value as number).toFixed(2)}/5`: '',
     },
   ];
 
