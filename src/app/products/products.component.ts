@@ -35,7 +35,8 @@ export class ProductsComponent {
               return of(undefined);
             }),
           ),
-        )
+        ),
+        take(1)
       )
       .subscribe();
   }

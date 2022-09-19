@@ -18,3 +18,16 @@ export interface Product {
     skip: number,
     limit: number
   }
+
+  export const initialProduct  = {
+    title: '',
+    description: '',
+    price: 0,
+    discountPercentage: 0,
+    rating: 0,
+    stock: 0,
+    brand: '',
+    category: '',
+    thumbnail: '',
+    images: []
+  }

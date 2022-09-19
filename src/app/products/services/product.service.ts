@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, finalize, Observable, tap, throwError, timer } from 'rxjs';
-import { Product, ProductSearchResult } from '../products.component.model';
+import { initialProduct, Product, ProductSearchResult } from '../products.component.model';
 import { ProductHttpService } from './product-http.service';
 
 @Injectable({ providedIn: 'root' })
@@ -77,7 +77,7 @@ export class ProductService {
     this.loading$$.next(true);
     return this.productHttp.add(product)
     .pipe(
-      tap((newProduct: Product) =>  this._addProduct({...product, ...newProduct})),
+      tap((newProduct: Product) =>  this._addProduct({...initialProduct, ...product, ...newProduct})),
       catchError((err: HttpErrorResponse) => {
         throw new Error(err.message);
       }),
