@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  width: 100%;
+  height: calc(100% - 4.5rem);
+  position: relative;
+}
+
+ag-grid-angular {
+  display: block;
+  width: 100%;
+  height: calc(100% - 4.5rem);
+}
+
+mat-spinner {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
