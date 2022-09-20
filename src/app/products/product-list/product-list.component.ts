@@ -1,49 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, Subject, switchMap, takeUntil } from 'rxjs';
+import { intervalService } from '../../shared/interval.service';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-
-      ag-grid-angular {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      mat-spinner {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-    `,
-  ],
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.css'],
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  searchText!: string;
+  constructor(
+    private productService: ProductService,
+    private bottomSheet: MatBottomSheet,
+    private intervalService: intervalService,
+  ) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  readonly updateTime$ = this.intervalService.updateTime$;
+
+  readonly subscription$ = new Subject();
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -54,6 +35,8 @@ export class ProductListComponent implements OnInit {
       sortable: true,
       resizable: true,
     },
+    pagination: true,
+    paginationAutoPageSize: true,
   };
   readonly columnDefs: Array<ColDef<Product>> = [
     {
@@ -64,6 +47,9 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Brand',
       field: 'brand',
+      valueFormatter: (params) => {
+        return params.value ? `${params.value}` : `Unknown`;
+      },
     },
     {
       headerName: 'Description',
@@ -88,8 +74,11 @@ export class ProductListComponent implements OnInit {
       headerName: 'Price',
       field: 'price',
       editable: true,
-      valueFormatter: (params) =>
-        Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(params.value),
+      valueFormatter: (params) => {
+        if (!params.value) return 'ERROR';
+        return Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(params.value);
+      },
+
       onCellValueChanged: (params) => {
         const data: Product = params.data;
         const newPrice: string = params.newValue;
@@ -103,11 +92,28 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) => {
+        return params.value ? `${(params.value as number).toFixed(2)} / 5` : `NA`;
+      },
     },
   ];
 
   ngOnInit(): void {
+    this.loading$?.subscribe((loading) => {
+      if (loading) this.gridOptions.api?.showLoadingOverlay();
+      else this.gridOptions.api?.hideOverlay();
+    });
+
+    this.intervalService
+      .refresh(() =>
+        this.searchText ? this.productService.filterProducts(this.searchText) : this.productService.getAll(),
+      )
+      .pipe(takeUntil(this.subscription$))
+      .subscribe();
+  }
+
+  gridReady(params: any) {
+    params.api.showLoadingOverlay();
     this.productService.getAll().subscribe();
   }
 
@@ -131,5 +137,24 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
       .subscribe();
+  }
+
+  add() {
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent)
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
+      )
+      .subscribe();
+  }
+
+  setSearchText(searchText: string) {
+    this.searchText = searchText;
+  }
+
+  ngOnDestroy(): void {
+    this.subscription$.complete();
   }
 }

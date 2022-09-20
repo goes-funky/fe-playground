@@ -1,0 +1,18 @@
+<div class="action-container">
+  <div class="search">
+    <y42-search id="fi-search" [placeholder]="'Search products'" (searchText)="setSearchText($event)"> </y42-search>
+    <span>Fetched {{ updateTime$ | async }} seconds ago</span>
+  </div>
+  <button aria-label="Add Product button" mat-raised-button color="primary" type="submit" (click)="add()">
+    Add New Product
+  </button>
+</div>
+
+<ag-grid-angular
+  class="ag-theme-alpine"
+  [rowData]="products$ | async"
+  [gridOptions]="gridOptions"
+  [columnDefs]="columnDefs"
+  (rowDoubleClicked)="openProduct($event)"
+  (gridReady)="gridReady($event)"
+></ag-grid-angular>

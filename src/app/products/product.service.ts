@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
-import { Product, ProductHttpService } from './product-http.service';
+import { BehaviorSubject, finalize, map, Observable, switchMap, tap, timer } from 'rxjs';
+import { IProductResponse, Product, ProductHttpService } from './product-http.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -15,7 +15,7 @@ export class ProductService {
   getAll() {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
-      tap((response) => this.products$$.next(response.products)),
+      tap((response: IProductResponse) => this.products$$.next(response.products)),
       finalize(() => this.loading$$.next(false)),
     );
   }
@@ -33,6 +33,23 @@ export class ProductService {
 
         this._updateProduct(id, { ...product, ...newProduct });
       }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  addProduct(newProduct: Partial<Product>) {
+    this.loading$$.next(true);
+    return timer(750).pipe(
+      switchMap(() => this.productHttp.add(newProduct)),
+      map((product: Product) => this._addProduct(product)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  filterProducts(query: string) {
+    this.loading$$.next(true);
+    return this.productHttp.filter(query).pipe(
+      tap((response: IProductResponse) => this.products$$.next(response.products)),
       finalize(() => this.loading$$.next(false)),
     );
   }
@@ -74,5 +91,10 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
   }
 }

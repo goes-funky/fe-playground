@@ -1,0 +1,14 @@
+<div class="search-box">
+  <form [formGroup]="form">
+    <mat-form-field>
+      <input
+        #searchInput
+        matInput
+        aria-label="Search input"
+        formControlName="searchText"
+        (ngModelChange)="filter($event)"
+        [placeholder]="placeholder"
+      />
+    </mat-form-field>
+  </form>
+</div>

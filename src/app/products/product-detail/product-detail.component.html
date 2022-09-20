@@ -39,7 +39,7 @@
       </div>
     </mat-card-content>
     <mat-card-actions [align]="'end'">
-      <button mat-raised-button type="button" [disabled]="form.invalid" (click)="cancel()">Cancel</button>
+      <button mat-raised-button type="button" (click)="cancel()">Cancel</button>
       <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || form.pristine">Submit</button>
     </mat-card-actions>
   </mat-card>
