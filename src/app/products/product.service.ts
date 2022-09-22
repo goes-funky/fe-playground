@@ -25,7 +25,10 @@ export class ProductService {
   add(product:Product){
     this.loading$$.next(true);
     return this.productHttp.add(product).pipe(
-      tap(() => this.products$$.next(this.products$$.getValue())),
+      tap((response) =>{
+       // this.products$$.next(this.products$$.getValue());
+        this._addProduct(response);
+      }),
       finalize(()=>this.loading$$.next(false))
     )
   }
@@ -79,6 +82,10 @@ export class ProductService {
       }),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
   }
 
   private _updateProduct(id: number, product: Product) {
