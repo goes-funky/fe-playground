@@ -1,0 +1,15 @@
+<div>
+  <div *ngIf="isAddEnabled" class="NewProduct">
+    <div>
+      <y42-product-detail (onSent)="disableAdd()"> </y42-product-detail>
+    </div>
+  </div>
+  <input
+    type="text"
+    name="searchKey"
+    id="searchKey"
+    placeholder="SearchHere"
+    [(ngModel)]="searchKey"
+    (ngModelChange)="onSearch($event)"
+  />
+</div>

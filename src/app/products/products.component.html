@@ -1,0 +1,9 @@
+<div style="height: 100%; padding: 1rem">
+  <h2>Products</h2>
+  <div>
+    <b>Add new product</b>
+    <input type="radio" name="addEnabled" id="addEnabled" (click)="toggleNewProduct()" />
+  </div>
+  <app-product-add [isAddEnabled]="isAddEnabled"> </app-product-add>
+  <router-outlet></router-outlet>
+</div>

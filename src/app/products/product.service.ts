@@ -4,7 +4,8 @@ import { Product, ProductHttpService } from './product-http.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  constructor(private productHttp: ProductHttpService) {}
+  constructor(private productHttp: ProductHttpService) {
+  }
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
@@ -12,12 +13,21 @@ export class ProductService {
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
 
+  
   getAll() {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
       tap((response) => this.products$$.next(response.products)),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+
+  add(product:Product){
+    this.loading$$.next(true);
+    return this.productHttp.add(product).pipe(
+      tap(() => this.products$$.next(this.products$$.getValue())),
+      finalize(()=>this.loading$$.next(false))
+    )
   }
 
   updateProduct(id: number, newProduct: Partial<Product>) {
@@ -75,4 +85,13 @@ export class ProductService {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
   }
+
+  search(title:string){
+    this.loading$$.next(true);
+    return this.productHttp.search(title).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(()=>this.loading$$.next(false))
+    )
+  }
+
 }

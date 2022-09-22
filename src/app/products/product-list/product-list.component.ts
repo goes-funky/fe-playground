@@ -108,7 +108,9 @@ export class ProductListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.productService.getAll().subscribe(result=>{
+      console.log(result);
+    });
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
