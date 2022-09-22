@@ -1,7 +1,7 @@
 <form [formGroup]="form" novalidate (ngSubmit)="submit()">
   <mat-card class="shipping-card">
     <mat-card-header>
-      <mat-card-title>Shipping Information</mat-card-title>
+      <mat-card-title *ngIf="pageTitle">{{ pageTitle }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <div class="row">
@@ -39,7 +39,7 @@
       </div>
     </mat-card-content>
     <mat-card-actions [align]="'end'">
-      <button mat-raised-button type="button" [disabled]="form.invalid" (click)="cancel()">Cancel</button>
+      <button mat-raised-button type="button" (click)="cancel()">Cancel</button>
       <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || form.pristine">Submit</button>
     </mat-card-actions>
   </mat-card>

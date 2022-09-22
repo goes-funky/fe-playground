@@ -1,0 +1,12 @@
+<ag-grid-angular
+  class="ag-theme-alpine"
+  [rowData]="products$ | async"
+  [gridOptions]="gridOptions"
+  [columnDefs]="columnDefs"
+  (rowDoubleClicked)="openProduct($event)"
+></ag-grid-angular>
+<mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner>
+
+<button (click)="addProduct()" class="add-button" mat-mini-fab color="primary" aria-label="Add new item button">
+  <mat-icon>add</mat-icon>
+</button>

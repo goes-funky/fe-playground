@@ -11,6 +11,7 @@ export interface Product {
   stock: number;
   brand: string;
   category: string;
+  state: 'add' | 'edit' | 'view';
   thumbnail: string;
   images: string[];
 }
