@@ -15,6 +15,9 @@
         <div class="col">
           <mat-form-field class="full-width">
             <textarea matInput placeholder="Description" formControlName="description"></textarea>
+            <mat-error *ngIf="form.controls['description'].hasError('required')">
+              Description is <strong>required</strong>
+            </mat-error>
           </mat-form-field>
         </div>
       </div>
