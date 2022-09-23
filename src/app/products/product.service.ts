@@ -71,6 +71,26 @@ export class ProductService {
     );
   }
 
+  addProduct(product: Product) {
+    this.loading$$.next(true);
+
+    return timer(750).pipe(
+      tap(() => {
+        if (!product) {
+          return;
+        }
+
+        this._addProduct(product);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
+  }
+
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);

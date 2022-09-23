@@ -1,21 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, firstValueFrom, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
+  templateUrl: './product-list.component.html',
   styles: [
     `
       :host {
@@ -36,6 +29,12 @@ import { ProductService } from '../product.service';
         top: 0.5rem;
         right: 0.5rem;
       }
+
+      .add-button {
+        position: fixed;
+        right: 5%;
+        top: 90%;
+      }
     `,
   ],
 })
@@ -44,6 +43,8 @@ export class ProductListComponent implements OnInit {
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+
+  public label!: string;
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -60,14 +61,20 @@ export class ProductListComponent implements OnInit {
       headerName: 'Title',
       field: 'title',
       sort: 'asc',
+      filter: true,
+      floatingFilter: true,
     },
     {
       headerName: 'Brand',
       field: 'brand',
+      filter: true,
+      floatingFilter: true,
     },
     {
       headerName: 'Description',
       field: 'description',
+      filter: true,
+      floatingFilter: true,
     },
     {
       headerName: 'Stock',
@@ -83,6 +90,8 @@ export class ProductListComponent implements OnInit {
         'border-left': '1px dashed #ddd',
         'border-bottom': '1px dashed #ddd',
       },
+      filter: true,
+      floatingFilter: true,
     },
     {
       headerName: 'Price',
@@ -99,16 +108,33 @@ export class ProductListComponent implements OnInit {
         'border-left': '1px dashed #ddd',
         'border-bottom': '1px dashed #ddd',
       },
+      filter: true,
+      floatingFilter: true,
     },
     {
       headerName: 'Rating',
       field: 'rating',
       valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      filter: true,
+      floatingFilter: true,
     },
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.productService.getAll().subscribe((res) => {
+      this.setLabel();
+    });
+  }
+
+  private setLabel() {
+    let count: number = 0;
+    setInterval(() => {
+      count++;
+      if (count == 60) {
+        count = 0;
+      }
+      this.label = `Fetched ${count} seconds ago`;
+    }, 1000);
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -129,6 +155,23 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+      )
+      .subscribe();
+  }
+
+  async addProduct(): Promise<void> {
+    // getting previous products length so i can generate a new random id for new product
+    const products = await firstValueFrom(this.products$);
+
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, {
+        // adding some required fixed data here
+        data: { state: 'add', id: products.length + Math.random(), rating: 4.55 } as Product,
+      })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct({ ...newProduct, brand: 'Y42' })),
       )
       .subscribe();
   }

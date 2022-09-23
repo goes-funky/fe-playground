@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
@@ -15,6 +17,8 @@ import { ProductListComponent } from './product-list.component';
     AgGridModule,
     MatProgressSpinnerModule,
     MatBottomSheetModule,
+    MatButtonModule,
+    MatIconModule,
     ProductDetailModule,
     RouterModule.forChild([
       {

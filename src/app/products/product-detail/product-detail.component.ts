@@ -43,6 +43,7 @@ export class ProductDetailComponent implements OnInit {
     private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
     @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
   ) {}
+  pageTitle!: string;
 
   readonly form = new FormGroup({
     id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
@@ -56,6 +57,9 @@ export class ProductDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (this.product.state == 'add') {
+      this.pageTitle = 'Add New Product';
+    } else this.pageTitle = 'Shipping Information';
     this.form.patchValue(this.product);
   }
 
