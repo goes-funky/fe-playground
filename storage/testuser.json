@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:4200",
+      "localStorage": [
+        {
+          "name": "y42-test-user",
+          "value": "{\"id\":\"1\",\"email\":\"test@example.com\",\"name\":\"test\"}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,14 +1,13 @@
 import { expect, Locator, Page } from '@playwright/test';
 
 export class ShippingInfo {
-
     readonly page : Page;
-    public titleInput : Locator;
-    public descInput : Locator;
-    public priceInput : Locator;
-    public stockInput : Locator;
-    public cancelBtn : Locator;
-    public saveBtn : Locator;
+    readonly titleInput : Locator;
+    readonly descInput : Locator;
+    readonly priceInput : Locator;
+    readonly stockInput : Locator;
+    readonly cancelBtn : Locator;
+    readonly saveBtn : Locator;
 
     constructor(page : Page) {
         this.page = page
@@ -20,19 +19,28 @@ export class ShippingInfo {
         this.saveBtn = page.locator('button:has-text("Submit")')
     }
 
-    async fillShippingInfoForm(title: string, desc: string, price: string, stock: string) {
+    async fillForm(title: string, desc: string, price: string, stock: string) {
+        await this.titleInput.first().click()
         await this.titleInput.fill(title)
+
+        await this.descInput.first().click()
         await this.descInput.fill(desc)
+
+        await this.priceInput.first().click()
         await this.priceInput.fill(price)
+
+        await this.stockInput.first().click()
         await this.stockInput.fill(stock)
-        await this.saveBtn.click()
+
+        await this.stockInput.press("Tab")
     }
 
-    async validateForm() {
+    async verifyFormValidations() : Promise<Boolean> {
+        let bool_for_validation : Boolean = false;
 
-        //title is required - this test will fail because no error shows in the UI when the ttle input is not valid.
+        //title is required - this test will fail because no error shows in the UI when tihe title input is not valid.
         // await this.titleInput.click()
-        // await this.titleInput.fill(' ')
+        // await this.titleInput.fill('')
         // await this.descInput.click() //clicking outside to make the error visible in UI
         // await expect(this.page.locator('text=Title is required')).toBeVisible() 
 
@@ -51,9 +59,10 @@ export class ShippingInfo {
         await this.stockInput.fill('')
         await this.priceInput.first().click()
         await expect(this.page.locator('text=Stock is required')).toBeVisible()
-        //Submit button should be disabled
 
-        await expect(this.saveBtn).toHaveAttribute('disabled', 'true')
+        // Submit button should be disabled
+        bool_for_validation = await this.saveBtn.isDisabled()
+        return bool_for_validation
     }
 
 }

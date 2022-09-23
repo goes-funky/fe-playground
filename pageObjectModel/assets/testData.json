@@ -1,0 +1,15 @@
+{
+    "testData1" : {
+        "title": "Automation Test",
+        "description": "Test Data To Lorem Ipsum",
+        "price": "40.00",
+        "stock": "23"
+      },
+      
+    "testData2" : {
+        "title": "Tea Test",
+        "description": "Test Data To Lorem Ipsum",
+        "price": "444.00",
+        "stock": "333"
+      }
+}
