@@ -44,6 +44,8 @@ export class ProductListComponent implements OnInit {
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
 
+  public label!: string;
+
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
     animateRows: true,
@@ -119,7 +121,20 @@ export class ProductListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.productService.getAll().subscribe((res) => {
+      this.setLabel();
+    });
+  }
+
+  private setLabel() {
+    let count: number = 0;
+    setInterval(() => {
+      count++;
+      if (count == 60) {
+        count = 0;
+      }
+      this.label = `Fetched ${count} seconds ago`;
+    }, 1000);
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
