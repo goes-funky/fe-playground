@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { ProductDetailComponent } from './product-detail.component';
+import {SlideRatingModule} from "./slide-rating/slide-rating.module";
 
 @NgModule({
   exports: [ProductDetailComponent],
@@ -19,6 +20,7 @@ import { ProductDetailComponent } from './product-detail.component';
     MatRadioModule,
     MatCardModule,
     ReactiveFormsModule,
+    SlideRatingModule
   ],
 })
 export class ProductDetailModule {}

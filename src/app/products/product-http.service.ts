@@ -32,6 +32,15 @@ export class ProductHttpService {
     }>('/api/products');
   }
 
+  filter(str: string) {
+    return this.http.get<{
+      products: Product[];
+      total: number;
+      skip: number;
+      limit: number;
+    }>(`/api/products/search?q=${str}`);
+  }
+
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
   }

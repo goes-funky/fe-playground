@@ -51,12 +51,17 @@ export class ProductDetailComponent implements OnInit {
       validators: [Validators.required, Validators.minLength(2), Validators.maxLength(255)],
       nonNullable: true,
     }),
+    brand: new FormControl('', { validators: [Validators.required, Validators.minLength(2)], nonNullable: true }),
     stock: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
     price: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
   });
 
+  sliderValue: number = 0;
+  sliderTouchedFlag: boolean = false;
+
   ngOnInit(): void {
     this.form.patchValue(this.product);
+    this.sliderValue = this.product?.rating || 0;
   }
 
   cancel() {
@@ -64,6 +69,11 @@ export class ProductDetailComponent implements OnInit {
   }
 
   submit() {
-    this.bottomSheetRef.dismiss(this.form.value);
+    this.bottomSheetRef.dismiss({ ...this.form.value, rating: this.sliderValue });
+  }
+
+  onRatingChanged(rating: number){
+    this.sliderValue = rating;
+    this.sliderTouchedFlag = true;
   }
 }
