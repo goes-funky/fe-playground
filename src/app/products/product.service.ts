@@ -8,9 +8,11 @@ export class ProductService {
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
+  private readonly addProduct$$ = new BehaviorSubject<Partial<Product> | null>(null);
 
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
+  readonly addProduct$: Observable<Partial<Product> | null> = this.addProduct$$;
 
   getAll() {
     this.loading$$.next(true);
@@ -35,6 +37,16 @@ export class ProductService {
       }),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+
+  addProduct(newProduct: Partial<Product> | null) {
+      this.loading$$.next(true);
+      return timer(750).pipe(
+          tap(() => {
+              this.addProduct$$.next(newProduct);
+          }),
+          finalize(() => this.loading$$.next(false)),
+          );
   }
 
   updateStock(id: number, newStock: number) {
@@ -69,10 +81,34 @@ export class ProductService {
       }),
       finalize(() => this.loading$$.next(false)),
     );
+  };
+
+  updateProductsAfterAdd(newProduct: Product) {
+    this.loading$$.next(true);
+     return timer(750).pipe(
+       tap(() => {
+           this._updateProductsAfterAdd(newProduct);
+       }),
+         finalize(() => this.loading$$.next(false)),
+     );
+    }
+
+  filterProducts(str: string) {
+      this.loading$$.next(true);
+      return this.productHttp.filter(str).pipe(
+          tap((response) => this.products$$.next(response.products)),
+          finalize(() => this.loading$$.next(false)),
+          );
   }
 
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _updateProductsAfterAdd(product: Product) {
+    product.id = this.products$$.getValue().length + 1;
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
   }
 }

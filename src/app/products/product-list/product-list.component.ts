@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import {filter, switchMap, takeUntil, tap} from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
+import {Unsibscriber} from "../../unsubscriber";
 
 @Component({
   selector: 'y42-product-list',
@@ -39,11 +40,14 @@ import { ProductService } from '../product.service';
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+export class ProductListComponent extends Unsibscriber implements OnInit {
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
+    super();
+  }
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  readonly addProduct$ = this.productService.addProduct$;
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -109,6 +113,20 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit(): void {
     this.productService.getAll().subscribe();
+
+    this.addProduct$.subscribe((product) => {
+      if(product !== null) {
+        this.bottomSheet
+            .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: null })
+            .afterDismissed()
+            .pipe(
+                filter(Boolean),
+                switchMap((newProduct) => this.productService.updateProductsAfterAdd(newProduct)),
+                takeUntil(this.unSubscriber$$)
+            )
+            .subscribe()
+      }
+    })
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
