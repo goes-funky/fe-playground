@@ -57,3 +57,31 @@ test('double click on a price cell and edit the value', async ({ page }) => {
   // check that the the product form opens by checking its title
   await expect(page.locator('text=55')).toHaveText('$55.00');
 });
+
+test('validate the values in the product form', async ({ page }) => {
+  await page.goto('/');
+
+  // login to the website
+  await page.locator('input[type="email"]').fill('valid@email.com');
+  await page.locator('input[type="password"]').fill('123');
+  await page.locator('button:has-text("Submit")').click();
+  await expect(page).toHaveURL('http://localhost:4200/products');
+
+  // double clicking on a row
+  await page.locator('text=- Daal Masoor 500 grams').dblclick();
+  // check that the the product form opens by checking its title
+  await expect(page.locator('.mat-card-title')).toHaveText('Shipping Information');
+
+  // filling in the product form
+  await page.locator('input[ng-reflect-placeholder="Title"]').fill('edited item title');
+  await page.locator('textarea[ng-reflect-placeholder="Description"]').fill('edited item descripton');
+  await page.locator('input[ng-reflect-placeholder="Price"]').fill('1234');
+  await page.locator('input[ng-reflect-placeholder="Stock"]').fill('5678');
+  await page.locator('button:has-text("Submit")').click();
+
+  // asserting on the updated values entered from the product form
+  await page.locator('text=edited item title');
+  await page.locator('text=edited item description');
+  await page.locator('text=edited item 1234');
+  await page.locator('text=edited item 5678');
+});
