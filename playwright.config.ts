@@ -14,7 +14,7 @@ const config: PlaywrightTestConfig = {
   testDir: './e2e',
   testMatch: /.*\.e2e-(test|spec)\.(js|ts|mjs)/,
   /* Maximum time one test can run for. */
-  timeout: 10_000,
+  timeout: 30_000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -57,10 +57,10 @@ const config: PlaywrightTestConfig = {
   outputDir: 'e2e-results/',
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm start',
-  //   port: 4200,
-  // },
+  webServer: {
+    command: 'npm start',
+    port: 4200,
+  },
 };
 
 export default config;

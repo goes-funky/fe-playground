@@ -85,3 +85,25 @@ test('validate the values in the product form', async ({ page }) => {
   await page.locator('text=edited item 1234');
   await page.locator('text=edited item 5678');
 });
+
+test('sorting the list by stock', async ({ page }) => {
+  await page.goto('/');
+
+  // login to the website
+  await page.locator('input[type="email"]').fill('valid@email.com');
+  await page.locator('input[type="password"]').fill('123');
+  await page.locator('button:has-text("Submit")').click();
+  await expect(page).toHaveURL('http://localhost:4200/products');
+
+  await page.locator('text=Stock').click();
+
+  let stocks = [];
+  for ( let i = 0; i < 15; i++ ) {
+    let temp = await page.locator(`div[row-index="${i}"]`).nth(1).textContent(); // get all the product details
+    temp = temp?.substring(0, temp.indexOf('$')) || null; // get all the details before the price
+    stocks.push(Number(temp?.match(/[0-9]+$/))); // get the exact number of stocks
+    if (i !== 0) {
+      expect(stocks[i]).toBeGreaterThanOrEqual(stocks[i - 1])
+    }
+  }
+})  
