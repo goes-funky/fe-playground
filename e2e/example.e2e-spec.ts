@@ -98,12 +98,12 @@ test('sorting the list by stock', async ({ page }) => {
   await page.locator('text=Stock').click();
 
   let stocks = [];
-  for ( let i = 0; i < 15; i++ ) {
+  for (let i = 0; i < 15; i++) {
     let temp = await page.locator(`div[row-index="${i}"]`).nth(1).textContent(); // get all the product details
     temp = temp?.substring(0, temp.indexOf('$')) || null; // get all the details before the price
     stocks.push(Number(temp?.match(/[0-9]+$/))); // get the exact number of stocks
     if (i !== 0) {
-      expect(stocks[i]).toBeGreaterThanOrEqual(stocks[i - 1])
+      expect(stocks[i]).toBeGreaterThanOrEqual(stocks[i - 1]);
     }
   }
-})  
+});
