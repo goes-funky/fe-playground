@@ -1,0 +1,17 @@
+<div class="toolbar">
+  <mat-form-field class="full-width">
+    <input matInput placeholder="Search" [formControl]="searchControl" />
+  </mat-form-field>
+  <span *ngIf="(fetchedAgo$ | async) != null">Fetched {{ fetchedAgo$ | async }} seconds ago</span>
+  <button class="button--add-product" mat-raised-button color="primary" type="button" (click)="addProduct()">Add Product</button>
+</div>
+
+<ag-grid-angular
+  class="ag-theme-alpine"
+  [rowData]="products$ | async"
+  [gridOptions]="gridOptions"
+  [columnDefs]="columnDefs"
+  (rowDoubleClicked)="openProduct($event)"
+></ag-grid-angular>
+
+<mat-spinner *ngIf="loading$ | async" [diameter]="36" mode="indeterminate"></mat-spinner>

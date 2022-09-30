@@ -20,6 +20,31 @@ export class ProductService {
     );
   }
 
+  search(query: string) {
+    this.loading$$.next(true);
+    return this.productHttp.search(query).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  addProduct(newProductData: Partial<Product>) {
+    this.loading$$.next(true);
+
+    return timer(750).pipe(
+      tap(() => {
+        const products = this.products$$.getValue();
+        const id = Date.now()
+        const newProduct = {
+          id,
+          ...newProductData
+        } as Product;
+        this.products$$.next([...products, newProduct]);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
   updateProduct(id: number, newProduct: Partial<Product>) {
     this.loading$$.next(true);
 

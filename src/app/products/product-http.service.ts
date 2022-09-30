@@ -32,6 +32,15 @@ export class ProductHttpService {
     }>('/api/products');
   }
 
+  search(query: string) {
+    return this.http.get<{
+      products: Product[];
+      total: number;
+      skip: number;
+      limit: number;
+    }>('/api/products/search', { params: { q: query }});
+  }
+
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
   }
