@@ -1,49 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { combineLatest, debounceTime, filter, interval, map, startWith, Subject, switchMap, takeUntil } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
+const MINUTE = 60 * 1000;
+
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-
-      ag-grid-angular {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      mat-spinner {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-    `,
-  ],
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.scss'],
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  readonly searchControl = new FormControl();
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -55,6 +31,7 @@ export class ProductListComponent implements OnInit {
       resizable: true,
     },
   };
+
   readonly columnDefs: Array<ColDef<Product>> = [
     {
       headerName: 'Title',
@@ -103,12 +80,41 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) => params.value != null ? `${(params.value as number).toFixed(2)}/5`: 'Not Provided',
     },
   ];
 
+  // assuming that this number should be counted since app received the data
+  fetchedAgo$ = combineLatest([
+    this.productService.loading$.pipe(filter((isLoading) => !isLoading), map(() => Date.now()),),
+    interval(MINUTE).pipe(startWith(0))
+  ]).pipe(map(([lastFetchedTime]) => Math.round((Date.now() - lastFetchedTime) / 1000)));
+
+  private unsubscribe$ = new Subject<void>();
+
   ngOnInit(): void {
     this.productService.getAll().subscribe();
+    this.searchControl.valueChanges.pipe(
+      takeUntil(this.unsubscribe$),
+      debounceTime(500),
+      switchMap((query) => this.productService.search(query))
+    ).subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  addProduct(): void {
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: null })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
+      )
+      .subscribe();
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
