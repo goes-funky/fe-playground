@@ -8,6 +8,20 @@ export class ProductService {
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
+  
+  private readonly newProduct: Product = {
+    id: 1,
+    title: '',
+    description: '',
+    price: 0,
+    discountPercentage: 0,
+    rating: 0,
+    stock: 0,
+    brand: '',
+    category: '',
+    thumbnail: '',
+    images: []
+  }
 
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
@@ -18,6 +32,18 @@ export class ProductService {
       tap((response) => this.products$$.next(response.products)),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+
+  getFiltered(query: string) {
+    this.loading$$.next(true);
+
+    return this.productHttp.getFiltered(query).pipe(
+      tap((response) => {
+        console.log(response)
+        return this.products$$.next(response.products)
+      }),
+      finalize(()=> this.loading$$.next(false))
+    )
   }
 
   updateProduct(id: number, newProduct: Partial<Product>) {
@@ -35,6 +61,23 @@ export class ProductService {
       }),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+
+  createProduct(newProduct: Partial<Product>) {
+    this.loading$$.next(true);
+    let prod:Product = {
+      ...this.newProduct,
+      ...newProduct
+    }
+    prod.id += this.products$$.getValue().length;
+    console.log(prod)
+    return timer(500).pipe(
+      tap(() => {
+        console.log(prod)
+        this._createProduct(prod);
+      }),
+      finalize(()=> this.loading$$.next(false))
+    )
   }
 
   updateStock(id: number, newStock: number) {
@@ -74,5 +117,10 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _createProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
   }
 }

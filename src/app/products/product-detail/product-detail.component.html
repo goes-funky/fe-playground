@@ -7,14 +7,19 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Title" formControlName="title" />
+            <input matInput placeholder="Title" name="title" formControlName="title" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Brand" name="brand" formControlName="brand" />
           </mat-form-field>
         </div>
       </div>
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <textarea matInput placeholder="Description" formControlName="description"></textarea>
+            <textarea matInput placeholder="Description" name="description" formControlName="description"></textarea>
           </mat-form-field>
         </div>
       </div>
@@ -22,7 +27,7 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Price" formControlName="price" />
+            <input matInput placeholder="Price" type="number" name="price" formControlName="price" />
             <mat-error *ngIf="form.controls['price'].hasError('required')">
               Price is <strong>required</strong>
             </mat-error>
@@ -30,17 +35,22 @@
         </div>
         <div class="col">
           <mat-form-field class="full-width">
-            <input matInput placeholder="Stock" formControlName="stock" />
+            <input matInput placeholder="Stock" type="number" name="stock" formControlName="stock" />
             <mat-error *ngIf="form.controls['stock'].hasError('required')">
               Stock is <strong>required</strong>
             </mat-error>
           </mat-form-field>
         </div>
+        <div class="col">
+          <mat-form-field class="full-width">
+            <input matInput placeholder="Rating" type="number" name="rating" formControlName="rating" />
+          </mat-form-field>
+        </div>
       </div>
     </mat-card-content>
     <mat-card-actions [align]="'end'">
-      <button mat-raised-button type="button" [disabled]="form.invalid" (click)="cancel()">Cancel</button>
-      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || form.pristine">Submit</button>
+      <button mat-raised-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" class="add-product-button" type="submit" [disabled]="form.invalid || form.pristine">Submit</button>
     </mat-card-actions>
   </mat-card>
 </form>
