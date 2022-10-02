@@ -1,0 +1,14 @@
+.productHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 1rem;
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+  .inlineFlex {
+    display: inline-flex;
+    align-items: center;
+  }
+}

@@ -103,7 +103,7 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) => (params.value ? `${(params.value as number).toFixed(2)}/5` : 'Not Rated Yet'),
     },
   ];
 
