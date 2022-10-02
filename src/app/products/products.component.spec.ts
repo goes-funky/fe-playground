@@ -26,7 +26,7 @@ describe(ProductsComponent.name, () => {
         MatFormFieldModule,
         MatInputModule,
         MatTooltipModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
       ],
       declarations: [ProductsComponent, MockComponent(ProductSearchComponent)],
       providers: [MockProvider(ProductHttpService)],

@@ -8,7 +8,7 @@ import { ProductService } from './product.service';
 @Component({
   selector: 'y42-products',
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.scss']
+  styleUrls: ['./products.component.scss'],
 })
 export class ProductsComponent implements OnInit {
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
@@ -40,14 +40,14 @@ export class ProductsComponent implements OnInit {
   }
 
   // action methods
-  addProduct(){
+  addProduct() {
     this.bottomSheet
-    .open<ProductDetailComponent, Product, Product>(ProductDetailComponent)
-    .afterDismissed()
-    .pipe(
-      filter(Boolean),
-      switchMap((newProduct) => this.productService.addProduct(newProduct)),
-    )
-    .subscribe();
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent)
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
+      )
+      .subscribe();
   }
 }

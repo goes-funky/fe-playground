@@ -14,8 +14,6 @@ import { ProductService } from '../product.service';
       </mat-form-field>
     </form>
   `,
-  styles: [
-  ]
 })
 export class ProductSearchComponent implements OnInit {
   constructor(private productService: ProductService) {
@@ -34,7 +32,7 @@ export class ProductSearchComponent implements OnInit {
   // private methods
   private _createForm() {
     this.form = new FormGroup({
-      search: this.search
+      search: this.search,
     });
   }
 
@@ -49,5 +47,4 @@ export class ProductSearchComponent implements OnInit {
       }
     });
   }
-
 }

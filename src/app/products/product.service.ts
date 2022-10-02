@@ -73,7 +73,7 @@ export class ProductService {
     );
   }
 
-  addProduct(newProduct: Product){
+  addProduct(newProduct: Product) {
     this.loading$$.next(true);
     return timer(750).pipe(
       tap(() => {

@@ -13,15 +13,9 @@ describe(ProductSearchComponent.name, () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-        imports: [
-            FormsModule,
-            ReactiveFormsModule,
-            MatFormFieldModule,
-            MatInputModule,
-            BrowserAnimationsModule
-        ],
+      imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, BrowserAnimationsModule],
       declarations: [ProductSearchComponent],
-      providers: [MockProvider(ProductHttpService)]
+      providers: [MockProvider(ProductHttpService)],
     }).compileComponents();
   });
 
