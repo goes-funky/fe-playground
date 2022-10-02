@@ -1,10 +1,19 @@
-<div style="height: 100%; padding: 1rem">
+<nav class="productHeader">
   <h2>Products</h2>
   <div class="spacer"></div>
-  <div style="display: inline-flex">
-    <button mat-button color="primary" aria-label="Add New Product" title="Add New Label" (click)="addProduct()">
-        <mat-icon>add</mat-icon>
+  <div class="inlineFlex">
+    <button mat-button color="primary" aria-label="To Add New Product" title="Add New Product" (click)="addProduct()">
+      <mat-icon>add</mat-icon>
+    </button>
+    
+    <!-- I know we wanted a label but with my limited eye for perfect design, i couldnt find perfect place for putting label -->
+    <button
+        mat-icon-button
+        matTooltip="Fetched {{lastUpdatedSeconds || 'few' }} seconds ago"
+        aria-label="Last updated details"
+    >
+        <mat-icon>update</mat-icon>
     </button>
   </div>
-  <router-outlet></router-outlet>
-</div>
+</nav>
+<router-outlet></router-outlet>

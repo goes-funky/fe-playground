@@ -8,9 +8,11 @@ export class ProductService {
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
+  private lastTimeProductsUpdated$$ = new BehaviorSubject<number>(new Date().getTime());
 
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
+  readonly lastTimeProductsUpdated$: Observable<number> = this.lastTimeProductsUpdated$$;
 
   getAll() {
     this.loading$$.next(true);
@@ -82,14 +84,24 @@ export class ProductService {
     );
   }
 
+  private _setProductsUpdatedTime(timeStamp: number) {
+    this.lastTimeProductsUpdated$$.next(timeStamp);
+  }
+
+  private _productsListUpdated() {
+    this._setProductsUpdatedTime(new Date().getTime());
+  }
+
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+    this._productsListUpdated();
   }
 
   private _addProduct(product: Product) {
     const products = this.products$$.getValue();
     products.push(product);
     this.products$$.next([...products]);
+    this._productsListUpdated();
   }
 }

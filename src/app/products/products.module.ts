@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { ProductsComponent } from './products.component';
 
@@ -13,6 +14,7 @@ import { ProductsComponent } from './products.component';
     MatBottomSheetModule,
     MatIconModule,
     MatButtonModule,
+    MatTooltipModule,
     RouterModule.forChild([
       {
         path: '',
