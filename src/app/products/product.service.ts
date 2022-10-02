@@ -84,6 +84,14 @@ export class ProductService {
     );
   }
 
+  searchProduct(query: string) {
+    this.loading$$.next(true);
+    return this.productHttp.search(query).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
   private _setProductsUpdatedTime(timeStamp: number) {
     this.lastTimeProductsUpdated$$.next(timeStamp);
   }
