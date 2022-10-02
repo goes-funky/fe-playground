@@ -34,7 +34,7 @@ export class ProductsComponent implements OnInit {
   }
 
   private _setIntervalForLastTimeUpdatedLabel() {
-    interval(30 * 1000).subscribe(() => {
+    interval(60 * 1000).subscribe(() => {
       this.lastUpdatedSeconds = Math.round((new Date().getTime() - this._lastTimeProductsUpdated) / 1000);
     });
   }
