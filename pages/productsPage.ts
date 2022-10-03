@@ -21,11 +21,10 @@ export class ProductsPage {
     await this.row.locator(':scope', { hasText: title }).dblclick()
   }
 
-  async editStock(name: string){
-    await this.row.locator(':scope', { hasText: name }).locator('[col-id="stock"]').dblclick()
-
-    // await stockCell.fill('33');
-    // await this.page.keyboard.press('Enter');
-    // await expect(stockCell).toContainText('33');
+  async editStock(title: string, value: number){
+    await this.row.locator(':scope', { hasText: title }).locator('[col-id="stock"]').dblclick()
+    await this.row.locator(':scope', { hasText: title }).locator('[col-id="stock"]').type(value.toString())
+    await this.page.keyboard.press('Enter');
+    await expect(this.row.locator(':scope', { hasText: title }).locator('[col-id="stock"]')).toContainText(value.toString());
   }
 }

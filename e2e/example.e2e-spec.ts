@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { ProductForm } from '../pages/productForm';
 import { ProductsPage } from '../pages/productsPage';
+import { faker } from '@faker-js/faker';
 
 test.use({ storageState: 'storageState.json' });
 
@@ -49,7 +50,7 @@ test('homepage has Y42 in title and get started link linking to the intro page',
 });
 
 
-test.only('Product Form should open after dblclick on the product in the table', async ({ page }) => {
+test('Product Form should open after dblclick on the product in the grid', async ({ page }) => {
 
   const productsPage = new ProductsPage(page);
 
@@ -60,11 +61,12 @@ test.only('Product Form should open after dblclick on the product in the table',
   await expect(productForm.form, 'Product Form should be visible').toBeVisible();
 })
 
-test('3', async ({ page }) => {
+test('Stock value should be possible to change from the grid', async ({ page }) => {
   const productsPage = new ProductsPage(page);
 
   await productsPage.goTo();
-  await productsPage.editStock('iPhone X');
+  const stockValue = faker.datatype.number(1000);
+  await productsPage.editStock(mockProduct.products[0].title, stockValue);
   await page.waitForTimeout(10000);
 })
 
