@@ -11,6 +11,7 @@ import { devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
+  globalSetup: require.resolve('./global-setup'),
   testDir: './e2e',
   testMatch: /.*\.e2e-(test|spec)\.(js|ts|mjs)/,
   /* Maximum time one test can run for. */
@@ -41,6 +42,7 @@ const config: PlaywrightTestConfig = {
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    headless: false
   },
 
   /* Configure projects for major browsers */
@@ -60,6 +62,7 @@ const config: PlaywrightTestConfig = {
   webServer: {
     command: 'npm start',
     port: 4200,
+    reuseExistingServer: true,
   },
 };
 
