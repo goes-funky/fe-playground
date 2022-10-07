@@ -42,7 +42,7 @@ import { ProductService } from '../product.service';
 })
 
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet, private productHttp: ProductHttpService) {}
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
@@ -113,15 +113,7 @@ export class ProductListComponent implements OnInit {
     this.productService.getAll().subscribe();
   }
 
-  params: any;
-  componentProduct: any;
-
-  agInit(params : any) {
-      this.params = params;
-      this.componentProduct = this.params.context.products;
-      console.log("inside aginit",this.componentProduct.products$$);
-  }
-
+ 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
     if (!params.data) {
       return;

@@ -41,8 +41,7 @@ export class ProductHttpService {
 
 
   addProduct(product: Product) {
-    // const url = 'https://dummyjson.com/products/add';
-    const url = '/add';
+    const url = 'https://dummyjson.com/products/add';
     return this.http.post<{
       productDetails: Product;
     }>(url, product);

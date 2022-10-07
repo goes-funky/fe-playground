@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { filter, switchMap } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
+import { ProductDetailComponent } from './product-detail/product-detail.component';
 import { Product, ProductHttpService } from './product-http.service';
 import { ProductService } from './product.service';
 
@@ -26,10 +28,10 @@ import { ProductService } from './product.service';
   ],
   template: `
     <div style="height: 100%; padding: 1rem">
-    <div class="title"><button class="date" mat-raised-button color="primary">Add Product</button>
+    <div class="title"><button class="date" mat-raised-button color="primary" (click)=" openProduct($event)">Add Product</button>
     <mat-form-field class="name">
     <mat-icon matPrefix>search</mat-icon>
-    <input matInput #searchInput  placeholder="Search"  type="text" [(ngModel)]="searchString" (keydown.enter)="enterPressed()" >
+    <input matInput #searchInput  placeholder="Search (press enter)"  type="text" [(ngModel)]="searchString" (keydown.enter)="enterPressed()" >
     <button mat-icon-button matSuffix (click)="clear()" *ngIf="searchInput.value">
         <mat-icon>
             close
@@ -49,7 +51,8 @@ export class ProductsComponent implements OnInit {
   public searchString : string="";
 
   constructor(private productService: ProductService,
-              private productHttp: ProductHttpService) {
+              private productHttp: ProductHttpService,
+              private bottomSheet: MatBottomSheet) {
 
    }
   ngOnInit() {
@@ -71,5 +74,18 @@ export class ProductsComponent implements OnInit {
     this.searchString= '';
     this.searchUpdate.next(this.searchString);
 }
+
+   openProduct(params: any): void {
+   
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productHttp.addProduct(newProduct)),
+      )
+      .subscribe();
+
+  }
 
 }
