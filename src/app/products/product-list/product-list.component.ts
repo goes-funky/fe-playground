@@ -8,7 +8,11 @@ import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+  <form class="example-form">
+    <input placeholder="search" name="filterkey" (keyup)="filterProducts($event)">
+  </form>
+  <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
@@ -131,5 +135,9 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
       .subscribe();
+  }
+
+  filterProducts(e: any){
+    this.productService.search(e.target.value).subscribe();
   }
 }

@@ -71,6 +71,24 @@ export class ProductService {
     );
   }
 
+  // add new product
+  addProduct(newProduct: Product){
+    this.loading$$.next(true);
+    return this.productHttp.addProduct(newProduct).pipe(
+      tap((res:any) => this.products$$.next(res.id)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  // search products
+  search(params:any){
+    this.loading$$.next(true);
+    return this.productHttp.searchProducts(params).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
