@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { Product } from '../product-http.service';
+import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-detail',
@@ -41,7 +42,7 @@ import { Product } from '../product-http.service';
 export class ProductDetailComponent implements OnInit {
   constructor(
     private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
-    @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
+    @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product
   ) {}
 
   readonly form = new FormGroup({
