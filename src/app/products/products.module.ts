@@ -2,11 +2,23 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ProductsComponent } from './products.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { ProductListModule } from './product-list/product-list.module';
+
 
 @NgModule({
   declarations: [ProductsComponent],
   imports: [
+    FormsModule,
     CommonModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
     RouterModule.forChild([
       {
         path: '',
@@ -21,4 +33,4 @@ import { ProductsComponent } from './products.component';
     ]),
   ],
 })
-export class ProductsModule {}
+export class ProductsModule { }

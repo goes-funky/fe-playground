@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface Product {
   id: number;
@@ -23,6 +24,8 @@ export class ProductHttpService {
 
   // https://dummyjson.com/docs/products
 
+  searchString = new BehaviorSubject<string>("");
+
   getAll() {
     return this.http.get<{
       products: Product[];
@@ -35,4 +38,20 @@ export class ProductHttpService {
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
   }
+
+
+  addProduct(product: Product) {
+    // const url = 'https://dummyjson.com/products/add';
+    const url = '/add';
+    return this.http.post<{
+      productDetails: Product;
+    }>(url, product);
+
+   
+  }
+
+  searchProduct(query: string) : Observable<any>  {
+      return this.http.get<Product>(`https://dummyjson.com/products/search?q=${query}`);
+  }
+
 }

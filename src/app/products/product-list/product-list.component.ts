@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
 import { filter, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
+import { Product, ProductHttpService } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
@@ -39,8 +40,9 @@ import { ProductService } from '../product.service';
     `,
   ],
 })
+
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet, private productHttp: ProductHttpService) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
@@ -109,6 +111,15 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit(): void {
     this.productService.getAll().subscribe();
+  }
+
+  params: any;
+  componentProduct: any;
+
+  agInit(params : any) {
+      this.params = params;
+      this.componentProduct = this.params.context.products;
+      console.log("inside aginit",this.componentProduct.products$$);
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
