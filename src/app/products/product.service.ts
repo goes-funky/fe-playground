@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
-import { Product, ProductHttpService } from './product-http.service';
+import { BehaviorSubject, finalize, Observable, Subject, switchMap, tap, timer } from 'rxjs';
+import { GetProductsQueryParams, Product } from '../models/product';
+import { ProductHttpService } from './product-http.service';
+
+const DEFAULT_PRODUCT_VALUES: Partial<Product> = {
+  rating: 0,
+};
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -12,12 +17,22 @@ export class ProductService {
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
 
-  getAll() {
-    this.loading$$.next(true);
-    return this.productHttp.getAll().pipe(
-      tap((response) => this.products$$.next(response.products)),
-      finalize(() => this.loading$$.next(false)),
-    );
+  private readonly fetchProduct: Subject<GetProductsQueryParams> = new Subject();
+  private readonly fetchProductSideEffect = this.fetchProduct
+    .asObservable()
+    .pipe(
+      tap(() => this.loading$$.next(true)),
+      switchMap((params: GetProductsQueryParams) =>
+        this.productHttp.getAll(params).pipe(
+          tap((response) => this.products$$.next(response.products)),
+          finalize(() => this.loading$$.next(false)),
+        ),
+      ),
+    )
+    .subscribe();
+
+  getAll(params: GetProductsQueryParams = {}): void {
+    this.fetchProduct.next(params);
   }
 
   updateProduct(id: number, newProduct: Partial<Product>) {
@@ -33,6 +48,15 @@ export class ProductService {
 
         this._updateProduct(id, { ...product, ...newProduct });
       }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  public addProduct(newProduct: Partial<Product>): Observable<Product> {
+    this.loading$$.next(true);
+
+    return this.productHttp.post({ ...DEFAULT_PRODUCT_VALUES, ...newProduct }).pipe(
+      tap((productFromResponse) => this._updateProduct(productFromResponse.id, { ...productFromResponse })),
       finalize(() => this.loading$$.next(false)),
     );
   }

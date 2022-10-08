@@ -1,0 +1,8 @@
+<div class="page-wrapper">
+  <section class="header">
+    <h2>Products</h2>
+    <y42-search (search)="onSearch($event)" debounceTime="300"></y42-search>
+    <button mat-stroked-button color="primary" (click)="createNewProduct()">Add Product</button>
+  </section>
+  <router-outlet></router-outlet>
+</div>

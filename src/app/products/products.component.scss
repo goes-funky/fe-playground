@@ -1,0 +1,12 @@
+:host {
+    .page-wrapper {
+        height: 100%;
+        padding: 1rem;
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+    }
+}

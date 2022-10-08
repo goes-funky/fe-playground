@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
 import { filter, switchMap } from 'rxjs';
+import { Product } from 'src/app/models/product';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
+import { ProductEditFacade } from '../product-edit.facade';
 import { ProductService } from '../product.service';
 
 @Component({
@@ -40,7 +40,7 @@ import { ProductService } from '../product.service';
   ],
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  constructor(private productService: ProductService, private productEditFacade: ProductEditFacade) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
@@ -108,7 +108,7 @@ export class ProductListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.productService.getAll()
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -123,13 +123,12 @@ export class ProductListComponent implements OnInit {
 
     const product: Product = params.data;
     const id = product.id;
-    this.bottomSheet
-      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
-      .afterDismissed()
-      .pipe(
-        filter(Boolean),
-        switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
-      )
+
+    this.productEditFacade
+      .editProduct({
+        ...product,
+        id,
+      })
       .subscribe();
   }
 }
