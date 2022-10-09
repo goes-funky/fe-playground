@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { ProductDetailComponent } from './product-detail.component';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 
 @NgModule({
   exports: [ProductDetailComponent],
@@ -19,6 +20,7 @@ import { ProductDetailComponent } from './product-detail.component';
     MatRadioModule,
     MatCardModule,
     ReactiveFormsModule,
+    MatBottomSheetModule
   ],
 })
 export class ProductDetailModule {}
