@@ -42,7 +42,6 @@ export class ProductHttpService {
   }
 
   searchProduct(value: string) {
-    // https://dummyjson.com/docs/products#search
     return this.http.get<{
       products: Product[];
       total: number;

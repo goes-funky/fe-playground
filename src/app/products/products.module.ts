@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ProductsComponent } from './products.component';
+import {ProductListComponent} from "./product-list/product-list.component";
 
 @NgModule({
   declarations: [ProductsComponent],

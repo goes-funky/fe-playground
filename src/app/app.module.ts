@@ -6,10 +6,27 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthModule } from './auth/auth.module';
 import { NavigationModule } from './navigation/navigation.module';
+import {ProductListModule} from './products/product-list/product-list.module';
+import {ProductDetailModule} from './products/product-detail/product-detail.module';
+import {CommonModule} from '@angular/common';
+import {ProductsModule} from './products/products.module';
+import {ProductService} from "./products/product.service";
+import {ProductHttpService} from "./products/product-http.service";
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule, BrowserAnimationsModule, HttpClientModule, AuthModule, NavigationModule],
+  imports: [
+    CommonModule,
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    AuthModule,
+    NavigationModule,
+    ProductsModule,
+    ProductListModule,
+    ProductDetailModule],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
