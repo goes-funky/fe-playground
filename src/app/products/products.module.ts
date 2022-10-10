@@ -7,6 +7,7 @@ import { ProductsComponent } from './products.component';
   declarations: [ProductsComponent],
   imports: [
     CommonModule,
+
     RouterModule.forChild([
       {
         path: '',

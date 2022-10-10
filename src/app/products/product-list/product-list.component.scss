@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+#add-product {
+  margin-bottom: 30px;
+}
+
+.search-text {
+  margin-left: 20px;
+  height: 30px;
+  width: 200px;
+}
+
+ag-grid-angular {
+  min-width: 100%;
+  width: unset;
+  height: 100%;
+}
+
+mat-spinner {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}

@@ -3,44 +3,19 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
 import { filter, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
-import { Product } from '../product-http.service';
-import { ProductService } from '../product.service';
+import { Product } from '../../services/product-http.service';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-
-      ag-grid-angular {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      mat-spinner {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-    `,
-  ],
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.scss']
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  searchValue: string;
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {
+      this.searchValue = '';
+  }
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
@@ -132,4 +107,40 @@ export class ProductListComponent implements OnInit {
       )
       .subscribe();
   }
+
+    addProduct(): void {
+        this.bottomSheet
+            .open<ProductDetailComponent, Product, Product>(ProductDetailComponent)
+            .afterDismissed()
+            .pipe(
+                filter(Boolean),
+                switchMap((newProduct) =>
+                    this.productService.addProduct([{
+                            brand: newProduct.brand,
+                            category: newProduct?.category,
+                            description: newProduct.description,
+                            discountPercentage: newProduct?.discountPercentage,
+                            id: 0,
+                            images: newProduct?.images,
+                            price: newProduct.price,
+                            rating: newProduct.rating,
+                            stock: newProduct?.stock,
+                            thumbnail: newProduct?.thumbnail,
+                            title: newProduct?.title,
+                        }]
+                    ))).subscribe();
+    }
+
+    applyFilter($event: any) {
+        if ($event.length > 2) {
+            this.searchValue = $event;
+            return this.productService.searchProduct(this.searchValue).subscribe();
+        }
+        return;
+    }
+
+    clearSearch() {
+        this.searchValue = '';
+        return this.productService.getAll().subscribe();
+    }
 }
