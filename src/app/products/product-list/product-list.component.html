@@ -1,0 +1,17 @@
+<div>
+    <button color="primary" mat-raised-button id="add-product" (click)="addProduct()">Add Product</button>
+    <input class="search-text" matInput (ngModelChange)="applyFilter($event)" placeholder="Search a product"
+           [(ngModel)]="searchValue">
+    <button *ngIf="searchValue" mat-icon-button aria-label="Clear" (click)="clearSearch()">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<ag-grid-angular
+        class="ag-theme-alpine"
+        [rowData]="products$ | async"
+        [gridOptions]="gridOptions"
+        [columnDefs]="columnDefs"
+        (rowDoubleClicked)="openProduct($event)"
+></ag-grid-angular>
+
+<mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner>
