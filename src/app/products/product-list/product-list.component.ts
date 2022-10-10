@@ -8,8 +8,8 @@ import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'y42-product-list',
-    templateUrl: './product-list.component.html',
-    styleUrls: ['./product-list.component.scss'],
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.scss']
 })
 export class ProductListComponent implements OnInit {
   searchValue: string;
