@@ -1,49 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { combineLatest, debounceTime, filter, interval, map, Observable, startWith, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
+import { FormControl } from '@angular/forms';
 
+@UntilDestroy()
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-
-      ag-grid-angular {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      mat-spinner {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-    `,
-  ],
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent implements OnInit {
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  readonly searchFormControl = new FormControl();
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -108,7 +84,8 @@ export class ProductListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.subscrGetAllProducts();      
+    this.subscrSearchFormControl();
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -129,7 +106,44 @@ export class ProductListComponent implements OnInit {
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+        untilDestroyed(this),
       )
       .subscribe();
+  }
+  
+  addProduct(): void {
+    const newId = Math.floor(Math.random() * 100);
+    const product: Product = {
+      id: newId, title: '', brand: '', description: '', stock: 0, price: 0, rating: 0,
+      discountPercentage: 0,
+      category: '',
+      thumbnail: '',
+      images: []
+    };
+    
+    this.bottomSheet
+      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.createProduct(newProduct)),
+        untilDestroyed(this),
+      )
+      .subscribe();
+  }
+  
+  private subscrGetAllProducts(): void {
+    this.productService
+      .getAll()
+      .pipe(untilDestroyed(this))
+      .subscribe();
+  }
+  
+  private subscrSearchFormControl(): void {
+    this.searchFormControl.valueChanges.pipe(
+      debounceTime(400),
+      switchMap((query: string) => this.productService.searchByString(query)),
+      untilDestroyed(this),
+    ).subscribe();
   }
 }
