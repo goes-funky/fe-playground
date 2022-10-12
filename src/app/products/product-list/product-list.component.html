@@ -1,0 +1,16 @@
+<div class="grid-header">
+   <button mat-raised-button color="primary" (click)="addProduct()">Add Product</button>
+   
+   <mat-form-field>
+     <input matInput placeholder="Search..." [formControl]="searchFormControl"/>
+   </mat-form-field>
+</div>
+
+<ag-grid-angular
+   class="ag-theme-alpine"
+   [rowData]="products$ | async"
+   [gridOptions]="gridOptions"
+   [columnDefs]="columnDefs"
+   (rowDoubleClicked)="openProduct($event)"
+   ></ag-grid-angular>
+<mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> 

@@ -20,6 +20,17 @@ export class ProductService {
     );
   }
 
+  searchByString(query: string) {
+    this.loading$$.next(true);    
+
+    return this.productHttp
+      .search(query)
+      .pipe(
+        tap((response) => this.products$$.next(response.products)),
+        finalize(() => this.loading$$.next(false)),
+      );
+  }
+  
   updateProduct(id: number, newProduct: Partial<Product>) {
     this.loading$$.next(true);
 
@@ -35,6 +46,20 @@ export class ProductService {
       }),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+  
+  createProduct(newProduct: Partial<Product>) {
+    this.loading$$.next(true);
+    
+    const currentProductList = this.products$$.getValue();
+
+    return timer(750)
+      .pipe(
+        tap(() => {
+          this.products$$.next([...currentProductList, newProduct as Product]);
+        }),
+        finalize(() => this.loading$$.next(false)),
+      );
   }
 
   updateStock(id: number, newStock: number) {
