@@ -71,6 +71,30 @@ export class ProductService {
     );
   }
 
+  addProduct(newProduct: Product) {
+    newProduct['brand'] = 'Test brand';
+    newProduct['rating'] = 10;
+    // adding the above 2 properties just to display full info in the list
+    this.loading$$.next(true);
+    return this.productHttp.post(newProduct).pipe(
+      tap((product) => {
+        const products = this.products$$.getValue();
+        this.products$$.next([...products, product as Product]);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+    // note the add product functionality breaks if we add 2 products and update any 1 of them as the 
+    // addProduct API returns the product with same id everytime.
+  }
+
+  searchProduct(query: string) {
+    this.loading$$.next(true);
+    return this.productHttp.getBySearch(query).pipe(
+      tap((response) => this.products$$.next(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
