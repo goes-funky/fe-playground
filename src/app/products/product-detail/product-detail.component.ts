@@ -41,7 +41,7 @@ import { Product } from '../product-http.service';
 export class ProductDetailComponent implements OnInit {
   constructor(
     private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
-    @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
+    @Inject(MAT_BOTTOM_SHEET_DATA) private data: {type: string, product: Product},
   ) {}
 
   readonly form = new FormGroup({
@@ -56,7 +56,9 @@ export class ProductDetailComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.form.patchValue(this.product);
+    if (this.data.type === 'edit') {
+      this.form.patchValue(this.data.product);
+    }
   }
 
   cancel() {

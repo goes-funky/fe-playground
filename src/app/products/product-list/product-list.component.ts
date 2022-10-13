@@ -6,9 +6,16 @@ import { ProductDetailComponent } from '../product-detail/product-detail.compone
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
+let SEARCH_QUERY = '';
+
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+    <button class="mb-15" mat-raised-button (click)="addProduct()">Add Product</button>
+    <div class="mb-15">
+      <input type="text" placeholder="Search product.." (keyup)="onSearchProduct($event)" />
+    </div>
+    <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
@@ -36,14 +43,20 @@ import { ProductService } from '../product.service';
         top: 0.5rem;
         right: 0.5rem;
       }
+
+      .mb-15 {
+        margin-bottom: 15px;
+      }
     `,
   ],
 })
+
 export class ProductListComponent implements OnInit {
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
+  searchProductSubs: any;
 
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
@@ -108,7 +121,21 @@ export class ProductListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.getAllProducts();
+  }
+
+  getAllProducts(): void {
     this.productService.getAll().subscribe();
+  }
+
+  onSearchProduct(e: any): void {
+    SEARCH_QUERY = e.target.value.trim().toLowerCase();
+    if (SEARCH_QUERY.length === 0) {
+      this.getAllProducts();
+      return;
+    }
+    if (this.searchProductSubs) this.searchProductSubs.unsubscribe();
+    this.searchProductSubs = this.productService.searchProduct(SEARCH_QUERY).subscribe();
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -124,11 +151,22 @@ export class ProductListComponent implements OnInit {
     const product: Product = params.data;
     const id = product.id;
     this.bottomSheet
-      .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
+      .open<ProductDetailComponent>(ProductDetailComponent, { data: {type: 'edit', product} })
       .afterDismissed()
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
+      )
+      .subscribe();
+  }
+
+  addProduct(): void {
+    this.bottomSheet
+      .open<ProductDetailComponent>(ProductDetailComponent, { data: {type: 'new'} })
+      .afterDismissed()
+      .pipe(
+        filter(Boolean),
+        switchMap((newProduct) => this.productService.addProduct(newProduct)),
       )
       .subscribe();
   }
