@@ -1,0 +1,16 @@
+<div class="actions" >
+    <button class="add-button" (click)="addProduct()">Add Product</button>    
+    <div id="search">
+        <input class="search-box" placeholder="Search..." [formControl]="searchControl" type="text"/>
+    </div>
+</div>
+
+<ag-grid-angular
+  class="ag-theme-alpine"
+  [rowData]="products$ | async"
+  [gridOptions]="gridOptions"
+  [columnDefs]="columnDefs"
+  (rowDoubleClicked)="openProduct($event)"
+>
+</ag-grid-angular>
+<mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> 

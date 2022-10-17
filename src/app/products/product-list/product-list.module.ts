@@ -6,7 +6,8 @@ import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
 import { ProductDetailModule } from '../product-detail/product-detail.module';
 import { ProductListComponent } from './product-list.component';
-
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 @NgModule({
   declarations: [ProductListComponent],
   exports: [ProductListComponent],
@@ -16,6 +17,8 @@ import { ProductListComponent } from './product-list.component';
     MatProgressSpinnerModule,
     MatBottomSheetModule,
     ProductDetailModule,
+    FormsModule,
+    ReactiveFormsModule,
     RouterModule.forChild([
       {
         path: '',

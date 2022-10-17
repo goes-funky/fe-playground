@@ -75,4 +75,40 @@ export class ProductService {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
   }
+
+  private _addProduct(newProduct: Product) { 
+    const products = this.products$$.getValue();
+    products.push(newProduct);
+    this.products$$.next([...products]);
+  }
+  addProduct(newProduct: Product) {
+    //console.log('@updateProduct >> id > newProduct >> ', newProduct);
+    this.loading$$.next(true);
+     return timer(750).pipe(
+      tap(() => {
+        //const product = this.products$$.getValue().find((product) => product.id === id);
+        if (!newProduct) {
+          return;
+        }
+        const products = this.products$$.getValue();
+        newProduct.id =  products.length;
+        this._addProduct(newProduct);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  searchProducts(searchValue: string) {
+    console.log('@Search Value >> ', searchValue);
+    this.loading$$.next(true);
+    return this.productHttp.search(searchValue).pipe(
+      tap((response) => {
+        console.log('@Response of Search>> ', response);
+        this.products$$.next([]);
+        this.products$$.next(response.products);
+      
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
 }
