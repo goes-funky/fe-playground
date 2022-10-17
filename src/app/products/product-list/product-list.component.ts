@@ -1,50 +1,23 @@
+import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { debounceTime, filter, switchMap, tap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-
-      ag-grid-angular {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-
-      mat-spinner {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-    `,
-  ],
+  templateUrl: './product-list.component.html',
+  styleUrls: ['./product-list.component.scss']
 })
 export class ProductListComponent implements OnInit {
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
-
+  
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
     animateRows: true,
@@ -106,9 +79,11 @@ export class ProductListComponent implements OnInit {
       valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
     },
   ];
-
+  searchControl:FormControl = new FormControl();
   ngOnInit(): void {
     this.productService.getAll().subscribe();
+    this.applySearch();
+    
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -122,6 +97,7 @@ export class ProductListComponent implements OnInit {
     }
 
     const product: Product = params.data;
+    // console.log('@openProduct() >> product >> ', product);
     const id = product.id;
     this.bottomSheet
       .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
@@ -132,4 +108,38 @@ export class ProductListComponent implements OnInit {
       )
       .subscribe();
   }
+
+  /**
+   * Function called when user try to add new Product
+   */
+  addProduct(){
+  let product!: Product;
+    this.bottomSheet
+    .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
+    .afterDismissed()
+    .pipe(
+      filter(Boolean),
+      switchMap((newProduct) => this.productService.addProduct(newProduct)),
+    )
+    .subscribe((res) => {
+      // console.log('@Results of Adding new Product >> ',  res);
+    });
+  }
+
+  /**
+   * Function called when user try to search
+   */
+  applySearch() {
+    this.searchControl.valueChanges.pipe(
+      tap(value => {
+        //console.log('@newSearchValue>> ', value)
+      }),
+      debounceTime(1000),
+      switchMap(() => this.productService.searchProducts(this.searchControl.value))
+    ).subscribe((res) => {
+      // console.log('@Results of Search >> ',  res);
+    });
+  }
+
+
 }
