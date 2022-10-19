@@ -1,21 +1,32 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
-import { Product, ProductHttpService } from './product-http.service';
+import { IGETProductResponse, Product, ProductHttpService } from './product-http.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  constructor(private productHttp: ProductHttpService) {}
+  constructor(private productHttp: ProductHttpService) {
+  }
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
+  private readonly updated$$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
 
-  readonly products$: Observable<Product[]> = this.products$$;
-  readonly loading$: Observable<boolean> = this.loading$$;
+  readonly products$: Observable<Product[]> = this.products$$.asObservable();
+  readonly loading$: Observable<boolean> = this.loading$$.asObservable();
+  readonly updated$: Observable<number | null> = this.updated$$.asObservable();
 
-  getAll() {
+  getAll(): Observable<IGETProductResponse> {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
-      tap((response) => this.products$$.next(response.products)),
+      tap((response) => this._updateProducts(response.products)),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  searchByQuery(query: string): Observable<IGETProductResponse> {
+    this.loading$$.next(true);
+    return this.productHttp.search(query).pipe(
+      tap((response) => this._updateProducts(response.products)),
       finalize(() => this.loading$$.next(false)),
     );
   }
@@ -31,8 +42,17 @@ export class ProductService {
           return;
         }
 
-        this._updateProduct(id, { ...product, ...newProduct });
+        this._updateProductById(id, { ...product, ...newProduct });
       }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  addProduct(newProduct: Product): Observable<Product> {
+    this.loading$$.next(true);
+
+    return this.productHttp.create(newProduct).pipe(
+      tap((product: Product) => this._updateProductById(product.id, product)),
       finalize(() => this.loading$$.next(false)),
     );
   }
@@ -48,7 +68,7 @@ export class ProductService {
           return;
         }
 
-        this._updateProduct(id, { ...product, stock: newStock });
+        this._updateProductById(id, { ...product, stock: newStock });
       }),
       finalize(() => this.loading$$.next(false)),
     );
@@ -65,14 +85,19 @@ export class ProductService {
           return;
         }
 
-        this._updateProduct(id, { ...product, price: newPrice });
+        this._updateProductById(id, { ...product, price: newPrice });
       }),
       finalize(() => this.loading$$.next(false)),
     );
   }
 
-  private _updateProduct(id: number, product: Product) {
+  private _updateProductById(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _updateProducts(products: Product[]): void {
+    this.updated$$.next(Date.now());
+    this.products$$.next(products);
   }
 }

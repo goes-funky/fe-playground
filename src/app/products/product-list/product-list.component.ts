@@ -1,46 +1,48 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, switchMap, firstValueFrom } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
-      class="ag-theme-alpine"
-      [rowData]="products$ | async"
-      [gridOptions]="gridOptions"
-      [columnDefs]="columnDefs"
-      (rowDoubleClicked)="openProduct($event)"
-    ></ag-grid-angular>
-    <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
+  template: `
+      <ag-grid-angular
+              class="ag-theme-alpine"
+              [rowData]="products$ | async"
+              [gridOptions]="gridOptions"
+              [columnDefs]="columnDefs"
+              (rowDoubleClicked)="openProduct($event)"
+      ></ag-grid-angular>
+      <mat-spinner *ngIf="loading$ | async" [diameter]="36" [mode]="'indeterminate'"></mat-spinner> `,
   styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
+      `
+          :host {
+              display: block;
+              height: 100%;
+              width: 100%;
+              position: relative;
+          }
 
-      ag-grid-angular {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
+          ag-grid-angular {
+              display: block;
+              width: 100%;
+              height: 100%;
+          }
 
-      mat-spinner {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-      }
+          mat-spinner {
+              position: absolute;
+              top: 0.5rem;
+              right: 0.5rem;
+          }
     `,
   ],
 })
 export class ProductListComponent implements OnInit {
-  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
+  constructor(private productService: ProductService, private bottomSheet: MatBottomSheet, private readonly ngZone: NgZone) {
+  }
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
@@ -74,10 +76,10 @@ export class ProductListComponent implements OnInit {
       field: 'stock',
       valueFormatter: (params) => Intl.NumberFormat(undefined).format(params.value),
       editable: true,
-      onCellValueChanged: (params) => {
+      onCellValueChanged: async (params): Promise<void> => {
         const data: Product = params.data;
         const newStock: string = params.newValue;
-        this.productService.updateStock(data.id, Number(newStock)).subscribe();
+        await firstValueFrom(this.productService.updateStock(data.id, Number(newStock)));
       },
       cellStyle: {
         'border-left': '1px dashed #ddd',
@@ -90,10 +92,10 @@ export class ProductListComponent implements OnInit {
       editable: true,
       valueFormatter: (params) =>
         Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(params.value),
-      onCellValueChanged: (params) => {
+      onCellValueChanged: async (params): Promise<void> => {
         const data: Product = params.data;
         const newPrice: string = params.newValue;
-        this.productService.updatePrice(data.id, Number(newPrice)).subscribe();
+        await firstValueFrom(this.productService.updatePrice(data.id, Number(newPrice)));
       },
       cellStyle: {
         'border-left': '1px dashed #ddd',
@@ -103,15 +105,15 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) => Number.isFinite(params.value) ? `${(params.value as number).toFixed(2)}/5` : 'no rating yet',
     },
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.ngZone.runOutsideAngular(() => setInterval(async () => await firstValueFrom(this.productService.getAll()), 60000));
   }
 
-  openProduct(params: RowDoubleClickedEvent<Product>): void {
+  async openProduct(params: RowDoubleClickedEvent<Product>): Promise<void> {
     if (!params.data) {
       return;
     }
@@ -123,13 +125,12 @@ export class ProductListComponent implements OnInit {
 
     const product: Product = params.data;
     const id = product.id;
-    this.bottomSheet
+    await firstValueFrom(this.bottomSheet
       .open<ProductDetailComponent, Product, Product>(ProductDetailComponent, { data: product })
       .afterDismissed()
       .pipe(
         filter(Boolean),
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
-      )
-      .subscribe();
+      ));
   }
 }

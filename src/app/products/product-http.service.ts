@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 export interface Product {
   id: number;
@@ -19,7 +20,8 @@ export interface Product {
   providedIn: 'root',
 })
 export class ProductHttpService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   // https://dummyjson.com/docs/products
 
@@ -35,4 +37,19 @@ export class ProductHttpService {
   get(id: string) {
     return this.http.get<Product>(`/api/products/${id}`);
   }
+
+  create(product: Product): Observable<Product> {
+    return this.http.post<Product>(`/api/products/add`, product);
+  }
+
+  search(query: string): Observable<IGETProductResponse> {
+    return this.http.get<IGETProductResponse>(`/api/products/search?q=${query}`);
+  }
+}
+
+export interface IGETProductResponse {
+  limit: number;
+  products: Product[];
+  skip: number;
+  total: number;
 }

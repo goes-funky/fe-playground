@@ -59,11 +59,11 @@ export class ProductDetailComponent implements OnInit {
     this.form.patchValue(this.product);
   }
 
-  cancel() {
+  cancel(): void {
     this.bottomSheetRef.dismiss();
   }
 
-  submit() {
+  submit(): void {
     this.bottomSheetRef.dismiss(this.form.value);
   }
 }
