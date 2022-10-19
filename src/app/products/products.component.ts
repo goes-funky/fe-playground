@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, TemplateRef } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ProductDetailComponent } from './product-detail/product-detail.component';
 import { Product } from './product-http.service';
-import { debounceTime, filter, map, switchMap, take, tap } from 'rxjs/operators';
+import { debounceTime, filter, map, switchMap, tap } from 'rxjs/operators';
 import { ProductService } from './product.service';
 import { FormControl } from '@angular/forms';
-import { interval, Observable } from 'rxjs';
+import { interval, Observable, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'y42-products',
@@ -38,25 +38,25 @@ export class ProductsComponent implements OnInit {
   }
 
   async addProduct(): Promise<void> {
-    await this.bottomSheet.open<ProductDetailComponent, void, Product>(ProductDetailComponent).afterDismissed().pipe(
-      take(1),
+    //TODO testing this method toughing the error of zone
+    await firstValueFrom(this.bottomSheet.open<ProductDetailComponent, void, Product>(ProductDetailComponent).afterDismissed().pipe(
       filter(Boolean),
       switchMap((newProduct) => this.productService.addProduct(newProduct)),
-    ).subscribe({});
+    ));
   }
 
   private initLastUpdate(): void {
     this.lastUpdated$ = interval(1000).pipe(
       switchMap(() => this.productService.updated$),
       filter(Boolean),
-      map((value: number) => Math.floor((Date.now() - value) / 1000))
+      map((value: number) => Math.floor((Date.now() - value) / 1000)),
     );
   }
 
   private initOnSearchListener(): void {
     this.searchControl.valueChanges.pipe(
       debounceTime(500),
-      tap((query: string | null) => this.productService.searchByQuery(query as string)),
+      switchMap((query: string | null) => this.productService.searchByQuery(query as string)),
     ).subscribe({});
   }
 }

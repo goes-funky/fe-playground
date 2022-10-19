@@ -23,12 +23,12 @@ export class ProductService {
     );
   }
 
-  searchByQuery(query: string): void {
+  searchByQuery(query: string): Observable<IGETProductResponse> {
     this.loading$$.next(true);
-    this.productHttp.search(query).pipe(
+    return this.productHttp.search(query).pipe(
       tap((response) => this._updateProducts(response.products)),
       finalize(() => this.loading$$.next(false)),
-    ).subscribe({});
+    );
   }
 
   updateProduct(id: number, newProduct: Partial<Product>) {
@@ -48,7 +48,7 @@ export class ProductService {
     );
   }
 
-  addProduct(newProduct: Product) {
+  addProduct(newProduct: Product): Observable<Product> {
     this.loading$$.next(true);
 
     return this.productHttp.create(newProduct).pipe(
