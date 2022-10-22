@@ -22,9 +22,13 @@
     "@angular/platform-browser": "^14.0.0",
     "@angular/platform-browser-dynamic": "^14.0.0",
     "@angular/router": "^14.0.0",
+    "@testing-library/angular": "^12.1.2",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/user-event": "^14.4.3",
     "ag-grid-angular": "^28.0.0",
     "ag-grid-community": "^28.0.2",
     "rxjs": "~7.5.0",
+    "testing-library-selector": "^0.2.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },

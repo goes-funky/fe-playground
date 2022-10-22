@@ -11,7 +11,7 @@ const routes: Routes = [
   {
     path: 'products',
     canActivate: [LoggedInGuard],
-    loadChildren: () => import('./products/products.module').then((m) => m.ProductsModule),
+    loadChildren: () => import('./modules/products/products.module').then((m) => m.ProductsModule),
   },
 ];
 

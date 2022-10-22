@@ -1,0 +1,22 @@
+<div class="products">
+    <section>
+        <div class="products__header">
+            <div class="products__header__last-fetch">
+                <h4 data-testid="last-update-in-seconds">Last fetch was done {{lastFetchedMoment$ | async }} seconds ago</h4>
+            </div>
+            <div class="products__header__add-new-CTA">
+                <button
+                        mat-button
+                        color="primary"
+                        type="submit"
+                        (click)="addNewProduct()">
+                    Add New Product
+                </button>
+            </div>
+        </div>
+    </section>
+    <div>
+        <h2>Products</h2>
+    </div>
+    <router-outlet></router-outlet>
+</div>

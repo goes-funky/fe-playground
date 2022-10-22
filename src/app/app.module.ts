@@ -5,7 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthModule } from './auth/auth.module';
-import { NavigationModule } from './navigation/navigation.module';
+import { NavigationModule } from './modules/navigation/navigation.module';
 
 @NgModule({
   declarations: [AppComponent],
