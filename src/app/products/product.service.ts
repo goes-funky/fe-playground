@@ -11,7 +11,7 @@ export class ProductService {
 
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
-
+  
   getAll() {
     this.loading$$.next(true);
     return this.productHttp.getAll().pipe(
@@ -69,6 +69,36 @@ export class ProductService {
       }),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+
+  searchProducts(searchString: string) {
+    this.loading$$.next(true);
+
+    return this.productHttp.search(searchString).pipe(
+      tap((response) => {
+        this.products$$.next(response.products);
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  addProduct(newProduct: Partial<Product>) {
+    this.loading$$.next(true);
+    const product: Product = {} as Product;
+
+    return this.productHttp.post({ ...product, ...newProduct }).pipe(
+      tap((response) => {
+        newProduct.id = response.id;
+        newProduct.rating = 0;
+        this._addProduct({ ...product, ...newProduct })
+      }),
+      finalize(() => this.loading$$.next(false)),
+    );
+  }
+
+  private _addProduct(product: Product) {
+    const products = this.products$$.getValue();
+    this.products$$.next([...products, product]);
   }
 
   private _updateProduct(id: number, product: Product) {

@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, interval, Observable, scan, Subscription, switchMap, timer } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+    <p>Fetched {{lastFetched}} seconds ago </p>
+    <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
@@ -107,8 +109,28 @@ export class ProductListComponent implements OnInit {
     },
   ];
 
+  lastFetched = 0;
+  fetchInterval$ = new Subscription();
+
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    timer(0, 10000).pipe(
+      switchMap(_ =>{
+        return this.productService.getAll()})
+    ).subscribe({
+      next: () => {
+        this.lastFetched = 0;
+        this.fetchInterval$.unsubscribe();
+        this.setTimer();
+      }
+    });
+  }
+
+  setTimer() {
+    this.fetchInterval$ = interval(1000).subscribe({
+      next: () => {
+        this.lastFetched++;
+      }
+    })
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
