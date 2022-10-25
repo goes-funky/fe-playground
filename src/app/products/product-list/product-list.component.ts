@@ -44,7 +44,6 @@ export class ProductListComponent implements OnInit {
 
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
-
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
     animateRows: true,
@@ -103,7 +102,7 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) => `${(params?.value as number)?.toFixed(2)}/5`,
     },
   ];
 

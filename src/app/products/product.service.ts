@@ -20,6 +20,10 @@ export class ProductService {
     );
   }
 
+  createProduct(product: Product) {
+    this._createProduct(product)
+  }
+
   updateProduct(id: number, newProduct: Partial<Product>) {
     this.loading$$.next(true);
 
@@ -74,5 +78,10 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _createProduct(product: Product) {
+        const products = this.products$$.getValue();
+        this.products$$.next([...products, product]);
   }
 }

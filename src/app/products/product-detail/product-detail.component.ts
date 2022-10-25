@@ -1,7 +1,7 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { Component } from '@angular/core';
 import { Product } from '../product-http.service';
+import { ProductService } from '../product.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 @Component({
   selector: 'y42-product-detail',
@@ -38,32 +38,10 @@ import { Product } from '../product-http.service';
     `,
   ],
 })
-export class ProductDetailComponent implements OnInit {
-  constructor(
-    private bottomSheetRef: MatBottomSheetRef<ProductDetailComponent, Partial<Product>>,
-    @Inject(MAT_BOTTOM_SHEET_DATA) private product: Product,
-  ) {}
+export class ProductDetailComponent {
+  constructor(private productService: ProductService) {}
 
-  readonly form = new FormGroup({
-    id: new FormControl<number | undefined>(undefined, { nonNullable: true }),
-    title: new FormControl('', { validators: [Validators.required, Validators.minLength(2)], nonNullable: true }),
-    description: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(2), Validators.maxLength(255)],
-      nonNullable: true,
-    }),
-    stock: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
-    price: new FormControl(0, { validators: [Validators.required, Validators.min(0)], nonNullable: true }),
-  });
-
-  ngOnInit(): void {
-    this.form.patchValue(this.product);
-  }
-
-  cancel() {
-    this.bottomSheetRef.dismiss();
-  }
-
-  submit() {
-    this.bottomSheetRef.dismiss(this.form.value);
+  createProduct(product: Product) {
+    this.productService.createProduct(product);
   }
 }

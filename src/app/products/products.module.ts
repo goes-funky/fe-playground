@@ -16,6 +16,10 @@ import { ProductsComponent } from './products.component';
             path: '',
             loadChildren: () => import('./product-list/product-list.module').then((m) => m.ProductListModule),
           },
+          {
+            path: 'add',
+            loadChildren: () => import('./product-detail/product-detail.module').then((m) => m.ProductDetailModule),
+          },
         ],
       },
     ]),
