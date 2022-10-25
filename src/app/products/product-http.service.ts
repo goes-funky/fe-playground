@@ -23,13 +23,16 @@ export class ProductHttpService {
 
   // https://dummyjson.com/docs/products
 
-  getAll() {
+  getAll(productType?: string) {
+    const url = productType ? `/api/products/search?q=${productType}` : '/api/products';
+
     return this.http.get<{
       products: Product[];
       total: number;
       skip: number;
       limit: number;
-    }>('/api/products');
+      criteria?: string;
+    }>(url);
   }
 
   get(id: string) {

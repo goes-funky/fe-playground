@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'y42-product-detail',
@@ -39,9 +39,10 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
   ],
 })
 export class ProductDetailComponent {
-  constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService, private router: Router) {}
 
   createProduct(product: Product) {
     this.productService.createProduct(product);
+    this.router.navigate(['products']);
   }
 }
