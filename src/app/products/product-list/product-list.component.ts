@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColDef, GridOptions, RowDoubleClickedEvent } from 'ag-grid-community';
-import { filter, switchMap } from 'rxjs';
+import { filter, Subject, switchMap } from 'rxjs';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { Product } from '../product-http.service';
 import { ProductService } from '../product.service';
 
 @Component({
   selector: 'y42-product-list',
-  template: `<ag-grid-angular
+  template: `
+    <h2>Search Product</h2>
+    <input type="text" (change)="searchItem($event.target)"/>
+    <ag-grid-angular
       class="ag-theme-alpine"
       [rowData]="products$ | async"
       [gridOptions]="gridOptions"
@@ -39,12 +42,12 @@ import { ProductService } from '../product.service';
     `,
   ],
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
   constructor(private productService: ProductService, private bottomSheet: MatBottomSheet) {}
 
+  destroy$: Subject<boolean> = new Subject<boolean>();
   readonly products$ = this.productService.products$;
   readonly loading$ = this.productService.loading$;
-
   readonly gridOptions: GridOptions<Product> = {
     suppressCellFocus: true,
     animateRows: true,
@@ -103,12 +106,20 @@ export class ProductListComponent implements OnInit {
     {
       headerName: 'Rating',
       field: 'rating',
-      valueFormatter: (params) => `${(params.value as number).toFixed(2)}/5`,
+      valueFormatter: (params) => `${(params?.value as number)?.toFixed(2)}/5`,
     },
   ];
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe();
+    this.getProducts();
+  }
+
+  searchItem({ value }: any) {
+    this.getProducts(value);
+  }
+
+  getProducts(criteria?: string) {
+    this.productService.getAll(criteria).subscribe();
   }
 
   openProduct(params: RowDoubleClickedEvent<Product>): void {
@@ -131,5 +142,10 @@ export class ProductListComponent implements OnInit {
         switchMap((newProduct) => this.productService.updateProduct(id, newProduct)),
       )
       .subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

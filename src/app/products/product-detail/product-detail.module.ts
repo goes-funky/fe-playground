@@ -7,10 +7,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { ProductDetailComponent } from './product-detail.component';
+import { RouterModule } from '@angular/router';
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { ProductCreateComponent } from './product-create/product-create.component';
 
 @NgModule({
   exports: [ProductDetailComponent],
-  declarations: [ProductDetailComponent],
+  declarations: [ProductDetailComponent, ProductCreateComponent],
   imports: [
     CommonModule,
     MatInputModule,
@@ -19,6 +22,16 @@ import { ProductDetailComponent } from './product-detail.component';
     MatRadioModule,
     MatCardModule,
     ReactiveFormsModule,
+    RouterModule.forChild([
+      {
+        path: 'add',
+        component: ProductDetailComponent,
+      },
+    ]),
+  ],
+  providers: [
+    { provide: MatBottomSheetRef, useValue: {} },
+    { provide: MAT_BOTTOM_SHEET_DATA, useValue: {} }
   ],
 })
 export class ProductDetailModule {}

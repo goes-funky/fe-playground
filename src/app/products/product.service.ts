@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, tap, timer } from 'rxjs';
+import { BehaviorSubject, finalize, Observable, tap, timer, zip } from 'rxjs';
 import { Product, ProductHttpService } from './product-http.service';
 
 @Injectable({ providedIn: 'root' })
@@ -8,16 +8,21 @@ export class ProductService {
 
   private readonly loading$$ = new BehaviorSubject<boolean>(false);
   private readonly products$$ = new BehaviorSubject<Product[]>([]);
+  private readonly newProducts$$ = new BehaviorSubject<Product[]>([]);
 
   readonly products$: Observable<Product[]> = this.products$$;
   readonly loading$: Observable<boolean> = this.loading$$;
 
-  getAll() {
+  getAll(productType?: string) {
     this.loading$$.next(true);
-    return this.productHttp.getAll().pipe(
-      tap((response) => this.products$$.next(response.products)),
+    return zip([this.productHttp.getAll(productType), this.newProducts$$]).pipe(
+      tap(([response, newProducts]) => this.products$$.next([...response.products, ...newProducts])),
       finalize(() => this.loading$$.next(false)),
     );
+  }
+
+  createProduct(product: Product) {
+    this._createProduct(product)
   }
 
   updateProduct(id: number, newProduct: Partial<Product>) {
@@ -74,5 +79,10 @@ export class ProductService {
   private _updateProduct(id: number, product: Product) {
     const products = this.products$$.getValue();
     this.products$$.next([...products.filter((product) => product.id !== id), product]);
+  }
+
+  private _createProduct(product: Product) {
+        const products = this.newProducts$$.getValue();
+        this.newProducts$$.next([...products, product]);
   }
 }
